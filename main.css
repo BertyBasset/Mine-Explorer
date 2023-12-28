@@ -1,28 +1,48 @@
       /* Add some basic styling for better presentation */
-      menu {
-        background-color: #333;
+    menu {
+        background-color: #1E1E1E;
         color: #fff;
         padding: 0px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin:0px;
+        height:36px
 
     }
+
+    .margin {
+        min-width: 240px;
+
+    }
+
+
+    .menu2 {
+
+        height:30px;
+        background-color: #373737;
+        color: #fff;
+        padding: 0px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+
 
     a {
         padding:10px;
         text-decoration: none;
         color: #fff;
         margin: 0 10px;
-        border-style:solid;
-        border-width: 1px;     
-        border-color:#333 #333 #333 #333;   
+
     }
 
     a.selected {
-        background-color: #1E1E1E;
-        color:  #89BEF4;
-        border-color:gray gray #1E1E1E gray;
+        background-color: #373737;
+        color:  white;
+        font-weight: bold;
+
 
     }
 
@@ -49,13 +69,16 @@
     }
 
     .banner {
+        position:relative;
+        left:-5px;
+        top:-1px;
         display: flex;
-        height:100px;
+        height:150px;
         flex-direction: column;
         color: yellow; 
-        height:120px;
+        height:214px;
         background-image: url("https://buddlepit.co.uk/community/data/assets/logo/BPLogo1.png");
-        background-size: 40%;
+        background-size: 43.1%;
         background-repeat: no-repeat;
         background-position: center;
 
