@@ -1,62 +1,86 @@
       /* Add some basic styling for better presentation */
-    menu {
+    
+    a {
+        text-decoration: none;
+
+    }
+
+    .MainMenu {
         background-color: #1E1E1E;
         color: #fff;
         padding: 0px;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         margin:0px;
         height:36px
-
     }
 
-    .margin {
-        min-width: 240px;
+    .MainMenu a {
+        padding:10px;
+        color: #dedede;
+        margin: 0 10px;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        transition: all .25s ease;
+        white-space: nowrap;
+    }
 
+    .MainMenu a.selected {
+        background-color: #373737;
+        color:  white;
+        font-weight: bold;
     }
 
 
-    .menu2 {
+    .MainMenu a:hover {
+        background-color: #373737;
+        color: #fff;
+    }
 
+    /* Add right margin for last link */
+    .MainMenu a:last-child {
+        margin-right: 270px;
+        margin-left: auto;
+    }         
+
+
+    /* Add left margi for first link, but remive for small widths */
+    @media  (min-width: 1000px)  {
+    a:first-child {
+        margin-left: auto;
+        margin-left: 270px;
+    }     
+
+
+    .SubMenu {
+        margin: 0px;
+        font-size: smaller;
         height:30px;
         background-color: #373737;
         color: #fff;
         padding: 0px;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        justify-content: flex-start;
+        align-items: left;
     }
 
-
-
-    a {
+    .SubMenu a {
+        color:#66BBF7;
         padding:10px;
-        text-decoration: none;
-        color: #fff;
-        margin: 0 10px;
-
     }
 
-    a.selected {
-        background-color: #373737;
-        color:  white;
-        font-weight: bold;
+    .SubMenu a.selected {
+        color:white;
+        padding:10px;
+    }   
 
-
+    .SubMenu a:hover {
+        color:white;
+        padding:10px;
+        text-decoration: underline;
     }
-
-
-    a:hover {
-        background-color:#0a3c6e;
-        color: #fff;
-    }
-
-        /* Adjust the following style for the last link */
-    a:last-child {
-        margin-right: 0;
-        margin-left: auto;
-    }            
+     
 
 
     body {
@@ -86,9 +110,12 @@
     button {
         width: 100px;
         height: 30px;
-        background-color: #598EC4;color: White;
+        background-color: #185886;
+        border-radius: 4px;
+        color: White;
         border-width: 0;
+        transition: all .125s ease;
     }
     button:hover {
-        background-color: #79AEE4;
+        background-color: #1e6fa9;
     }
