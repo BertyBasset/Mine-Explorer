@@ -6,7 +6,7 @@
     }
 
     .MainMenu {
-        background-color: #1E1E1E;
+        background-color: #1E1E2E;
         color: #fff;
         padding: 0px;
         display: flex;
@@ -27,14 +27,14 @@
     }
 
     .MainMenu a.selected {
-        background-color: #373737;
+        background-color: #373747;
         color:  white;
         font-weight: bold;
     }
 
 
     .MainMenu a:hover {
-        background-color: #373737;
+        background-color: #373747;
         color: #fff;
     }
 
@@ -47,17 +47,18 @@
 
     /* Add left margi for first link, but remive for small widths */
     @media  (min-width: 1000px)  {
-    a:first-child {
-        margin-left: auto;
-        margin-left: 270px;
-    }     
+        a:first-child {
+            margin-left: auto;
+            margin-left: 270px;
+        }     
+    }
 
 
     .SubMenu {
         margin: 0px;
         font-size: smaller;
         height:30px;
-        background-color: #373737;
+        background-color: #373747;
         color: #fff;
         padding: 0px;
         display: flex;
@@ -88,13 +89,13 @@
         text-align: center;
         vertical-align: top;
         margin: 0px;
-        background-color: #1E1E1E;
+        background-color: #1E1E2E;
         color:white
     }
 
     .banner {
         position:relative;
-        left:-5px;
+        left:-6px;
         top:-1px;
         display: flex;
         height:150px;
@@ -102,7 +103,7 @@
         color: yellow; 
         height:214px;
         background-image: url("https://buddlepit.co.uk/community/data/assets/logo/BPLogo1.png");
-        background-size: 43.1%;
+        background-size: auto 200px;
         background-repeat: no-repeat;
         background-position: center;
 
