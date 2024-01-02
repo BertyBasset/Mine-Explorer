@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Wilkinson Historic Welsh Mine Workings Dataset - curated by Dave Linton</title>
+  		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+		<style>
+			.custom-attribution {
+				background-color: white;
+				padding: 0px;
+				margin: 0;
+				border-radius: 1px;
+				position:relative;
+				top:10px;
+				left:-9px
+		}
+		</style>
+
+
+
+	</head>
+	<body style="margin:0; padding: 0;" >
+		<div id="map" style="margin:0; padding: 0; height: 100vh; width: 100%"></div>
+
+		<script>
+			var startLat = 53.05;
+			var startLon = -3.59;
+			var startZoom = 8;
+
+			var urlParams = new URLSearchParams(window.location.search);
+
+			// Get latitude and longitude values from the query string
+			var lat = urlParams.get('Lat');
+			if (lat === null)
+				lat = urlParams.get('lat');
+			
+			var lon = urlParams.get('Lon');
+			if (lon === null)
+				lon = urlParams.get('lon');
+
+			var zoom = urlParams.get('Zoom');
+			if (zoom === null)
+				zoom = urlParams.get('zoom');
+
+
+			// Check if the parameters are present and numeric
+			if (lat !== null && !isNaN(lat))
+    			startLat =  lat;
+			if (lon !== null && !isNaN(lon))
+    			startLon =  lon;
+			if (zoom !== null && !isNaN(zoom))
+    			startZoom =  zoom;
+    			
+
+			var map = L.map('map').setView([startLat, startLon], startZoom);
+
+			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			}).addTo(map);
+
+			
+			//fetch('./geojson/Wilkinson.json')
+			fetch('./geojson/Wilkinson.json')
+  				.then(response => response.json())
+  				.then(data => {
+    				// Create a Leaflet GeoJSON layer and add it to the map
+    				L.geoJSON(data, {
+      				pointToLayer: function (feature, latlng) {
+        			// Customize the marker here, e.g., use a different icon
+						
+					var color = getColor(feature.properties.product);
+				
+					if(color == 'darkgreen' &&(feature.properties.name == "LEVEL" || feature.properties.name == "SHAFT" || feature.properties.name ==   "LEVELS"
+						|| feature.properties.name == "LEVELS (trial)" || feature.properties.name ==   "SHAFT (trial)" || feature.properties.name ==   "SHAFTS" || feature.properties.name ==   "SHAFTS (trial)" ))
+						color = 'gray'
+
+					return L.circleMarker(latlng, {
+						radius: 4, // You can adjust the radius as needed
+						
+						color: color, // Border color of the dot
+						weight: 1, // Border width of the dot
+						opacity: 1, // Opacity of the dot
+						fillOpacity: 0.6 // Fill opacity of the dot
+					}).bindPopup(getPopupText(feature));
+
+      			}
+    		}).addTo(map);
+  				})
+  			.catch(error => {
+    			console.error('Error fetching JSON:', error);
+  			});
+
+			var customControl = L.control({ position: 'bottomleft' });
+
+			customControl.onAdd = function (map) {
+  			var container = L.DomUtil.create('div', 'custom-attribution');
+  			container.innerHTML = 'source: Wilkinson Historic Welsh Mines dataset, curated by D. Linton';
+  			return container;
+		};
+
+		customControl.addTo(map);
+	
+ 		function getColor(product) {
+			var color = "darkgreen";
+			switch(product) {
+				case "coal": 
+				case "graphite": 
+					return "black";
+				case "copper": 
+				case "copper/lead/zinc": 
+				case "copper/iron": 
+					return "orange";
+				case "gold": 
+				case "sulphur ": 
+					return "yellow";
+				case "slate":
+					return "purple";
+				case "lead": 
+					return "gray";
+				case "gravel":
+				case "sand":
+				case "clay":
+				case "sand/gravel":
+					return "beige";
+				case "limestone": 
+					return "blue";
+				case "ironstone": 
+				case "iron": 
+				case "iron/manganese": 
+					return "brown";
+				case "lead/silver/zinc":
+				case "lead/zinc": 
+				case "lead/silver": 
+				case "zinc":
+				case "lead/copper": 
+				case "lead/zinc/barytes": 
+				case "lead/barytes": 
+				case "lead": 
+				case "silver": 
+				case "antimony": 
+				case "arsenic": 
+				case "molybdenite": 
+				case "cobalt/nickel": 
+				case "lead/iron": 
+					return "gray";
+				case "barytes": 
+					return "pink";
+				case "manganese": 
+					return "darkpurple";
+				case "ochre": 
+				case "jasper": 
+				case "brick": 
+					return "red";
+				case "quartz (rock) crystal": 
+				case "silica": 
+				case "calcspar": 
+				case "chinastone": 
+				case "asbestos": 
+				case "marl": 
+					return "cyan";					
+				default: 
+					return "darkgreen";
+			}
+		}
+
+		function getPopupText(feature) {
+			var name = feature.properties.name;
+			var product = feature.properties.product;
+
+			return (product == "" ? name : name + " (" + product + ")");
+
+		}
+
+  		</script>
+	</body>
+</html>
