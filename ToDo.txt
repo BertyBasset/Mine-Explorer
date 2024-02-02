@@ -1,0 +1,14 @@
+For Normal search, highlight match text
+
+Header stylesheetrow/alt style
+Hover and click on row
+
+Multi Product
+
+
+Details Page
+
+Map Results
+
+
+
