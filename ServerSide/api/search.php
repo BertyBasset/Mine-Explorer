@@ -25,7 +25,7 @@ try {
     $sheet = isset($_REQUEST['sheet']) ?     sanitizeInput($_REQUEST['sheet']) : null;
 
     $is_crow_query = isset($_REQUEST['is_crow']) ? strtolower($_REQUEST['is_crow']) : null;
-    // Parse the query string value to boolean or null
+    // 3 state bool - Parse the query string value to boolean or null 
     if ($is_crow_query === "true") {
         $is_crow = true;
     } elseif ($is_crow_query === "false") {
