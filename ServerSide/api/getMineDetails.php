@@ -3,8 +3,8 @@
 // Database connection settings
 $host = 'localhost';
 $dbname = 'MineSites';
-$username = '{UserName}';
-$password = '{Password}';
+$username = 'rob';
+$password = 'Cheese1!';
 
 try {
     // Connect to the database
@@ -37,6 +37,9 @@ try {
     $publications = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $stmt->nextRowset();
     $urls = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->nextRowset();
+    $nearest_mines = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
     // Format the result as JSON
     $result = [
@@ -44,7 +47,8 @@ try {
         'Products' => $products,
         'MineNames' => $mineNames,
         'Publications' => $publications,
-        'Urls' => $urls
+        'Urls' => $urls,
+        'NearestMines' => $nearest_mines
     ];
 
     // Set the HTTP response headers

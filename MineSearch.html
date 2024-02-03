@@ -2,12 +2,18 @@
     <head>
         <title>Mine Database</title>
         <link rel="stylesheet" href="main.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>       
         <script src="./javascript/os.js"></script>
         <script src="./javascript/MineSearch.js"></script>
         <script>
             // Set initial focus of quick search textbox
             document.addEventListener("DOMContentLoaded", function() {
+                ckIsCrow = document.getElementById('is-crow');
+                ckIsCrow.indeterminate=true;
+                ckIsCrow.title = "No preference";
                 document.getElementById("quick-search").focus();
+                initMap();
             });
         </script>
     </head>
@@ -17,8 +23,10 @@
             <a href="https://buddlepit.co.uk">Forums</a>
             <a class="selected" href="MineSearch.html">Mine Database</a>
             <a href="CoOrds.html">Utilities</a>
-            <a href="About.html">About</a>
+            <a href="About.html" style="visibility: collapse;">About</a>
+            <!--
             <a href="https://buddlepit.co.uk/community/index.php?login/">Login</a>
+            -->
         </menu>
         <menu class="SubMenu">
             <a class="selected" href="MineSearch.html">Mine Search</a>
@@ -108,7 +116,7 @@
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="product">Products:</label>
+                            <label for="product">Product:</label>
                             <select id="product" name="product">
                                 <option value="">[select product]</option>
                             </select>
@@ -135,6 +143,7 @@
                         <div class="button-group">
                             <button type="submit" style="width: 70px;" onclick="search();">Search</button>
                             <button type="reset" style="width: 70px;" onclick="reset();">Reset</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;Search Results to <select style="width:80px" id="resultSelector" onchange="selectResultDisplay()"><option value="0">Table</option><option value="1">Map</option></select>
                         </div>
                     </div>
                     
@@ -142,7 +151,7 @@
             </div>
         </div>
         <div class="searchresults">
-            
+            <div id="divMap" style="min-width:800px;min-height:800px;margin:auto"></div>
             <table id="data-table" style="display: none; text-align:left" >
                 <thead>
                     <tr>

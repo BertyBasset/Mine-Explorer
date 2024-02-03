@@ -1,5 +1,12 @@
 const MAX_RESULTS = 500;
-initiallise();
+
+window.onload = function() {
+    initiallise();
+}
+
+
+let state = 2; // Initial is-crow checkbox state: indeterminate
+
 
 
 function reset() {
@@ -51,6 +58,7 @@ function search() {
         .then(response => response.json())
         .then(data => {
             showResults(data, 'detail');
+            showMapResults(data);
             spinner.style.display = "none";
         })
         .catch(error => console.error('Error fetching data:', error)
@@ -120,6 +128,7 @@ function letterSearch(letter) {
         .then(response => response.json())
         .then(data => {
             showResults(data, "letter");
+            showMapResults(data);
             spinner.style.display = "none";
         })
         .catch(error => console.error('Error fetching data:', error)
@@ -143,6 +152,7 @@ function quickSearch() {
         .then(response => response.json())
         .then(data => {
             showResults(data, "quick");
+            showMapResults(data);
             spinner.style.display = "none";
         })
         .catch(error => console.error('Error fetching data:', error)
@@ -159,37 +169,50 @@ function showResults(data, searchType) {
     tableBody.innerHTML = '';
     data.forEach(item => {
         const row = document.createElement('tr');
+        row.addEventListener('click', function() { window.open(`MineDetails.html?id=${btoa(item.ID)}`, "_blank") });
+        row.title = "Click to open Details in a new tab."
+
         row.innerHTML = `
             <td>${item.ID}</td>
-            <td>${highlightSiteName(item.Names,searchType)}</td>
+            <td style='min-width:100px'>${highlightSiteName(item.Names,searchType)}</td>
             <td>${highlightLocation(item.Location, searchType)}</td>
             <td style='text-align: center'>${item.IsCrow?"Y":"N"}</td>
             <td>${item.AreaName}</td>
-            <td>${highlightWithSpaces(item.Products, searchType)}</td>
+            <td>${highlightProduct(item.Products, searchType)}</td>
             <td>${isNaN(item.Lat) ? "" : parseFloat(item.Lat).toFixed(5)},${isNaN(item.Lat) ? "" : parseFloat(item.Long).toFixed(5)}</td>
             <td>${item.GridRef}</td>
             <td>${item.Distance ==null ? "-" : item.Distance.toFixed(1) + "km"}</td>
             <td>${item.SiteType??"-"}</td>
-            <td title="${item.Summary.replace(/<[^>]*>/g, '')}">${highlightWithSpaces(truncateWithEllipsis(item.Summary, 300), searchType)}</td>
+            <td title="${item.Summary.replace(/<[^>]*>/g, '')}">${highlightTextFields(truncateWithEllipsis(item.Summary, 300), searchType)}</td>
 
         `;
         tableBody.appendChild(row);
     });
     
+    var selectedIndex = document.getElementById('resultSelector').selectedIndex;
 
 
     var elapsed = performance.now() - startTime;
     if(data.length == 0) {
         document.getElementById("data-table").style.display = "none";
+        document.getElementById("divMap").style.display = "none";
         document.getElementById("search-summary").style.display = "block";
         document.getElementById("search-summary").innerText = `No matching records found in ${elapsed.toFixed(0)}ms.`;
         // Letter search not capped for now
     } else if (data.length >= MAX_RESULTS && searchType != "letter") {
-        document.getElementById("data-table").style.display = "block";
+        if(selectedIndex == 0)
+            document.getElementById("data-table").style.display = "block";
+        else
+            document.getElementById("divMap").style.display = "block";
+
         document.getElementById("search-summary").style.display = "block";
         document.getElementById("search-summary").innerText = `Maximum of ${MAX_RESULTS} records returned in ${elapsed.toFixed(0)}mS. Please refine your search.`;
     } else {
-        document.getElementById("data-table").style.display = "block";
+        if(selectedIndex == 0)
+            document.getElementById("data-table").style.display = "block";
+        else
+            document.getElementById("divMap").style.display = "block";
+
         document.getElementById("search-summary").style.display = "block";
         document.getElementById("search-summary").innerText = `${data.length} matching records found in ${elapsed.toFixed(0)}ms.`;
     }
@@ -204,9 +227,15 @@ function highlightSiteName(text, searchType) {
     if(text == null)
         return text;
 
+  
+    if(searchType == "quick" || searchType == "detail") {
+        var search;
+        if(searchType == "quick")
+            search = document.getElementById("quick-search").value;
+        else
+            search = document.getElementById("name").value;
+        
 
-    var search = document.getElementById("quick-search").value;
-    if(searchType == "quick") {
         const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
         // Create a regular expression pattern with spaces optional
@@ -252,15 +281,51 @@ function highlightLocation(text, searchType) {
 
 }
 
-function highlightWithSpaces(text, searchType) {
+
+
+function highlightProduct(text, searchType) {
+    //                           detail, letter, quick
+    if(text == null)
+        return text;
+
+    if(searchType == "quick" || searchType == "detail") {
+        var search;
+        if(searchType == "quick")
+            search = document.getElementById("quick-search").value;
+        else {
+            var ddlP  = document.getElementById("product");
+            search = ddlP.options[ddlP.selectedIndex].text;
+            if(search == "")
+                return text;        
+        }
+
+        let regexPattern = new RegExp(search, "gi");
+        let highlightedHtml = text.replace(regexPattern, (match) => {
+            return `<span style="background-color:black;color: yellow;">${match}</span>`;
+        });
+        return highlightedHtml;
+    } else
+        return text;
+}
+
+
+function highlightTextFields(text, searchType) {
     //                           detail, letter, quick
 
     if(text == null)
         return text;
 
+    if(searchType == "quick" || searchType == "detail") {
+        var search;
+        if(searchType == "quick")
+            search = document.getElementById("quick-search").value;
+        else {
+            search = document.getElementById("text").value;
+            if(search == "")
+                return text;
+        }
 
-    if(searchType == "quick") {
-        let regexPattern = new RegExp(document.getElementById("quick-search").value, "gi");
+        let regexPattern = new RegExp(search, "gi");
         let highlightedHtml = text.replace(regexPattern, (match) => {
             return `<span style="background-color:black;color: yellow;">${match}</span>`;
         });
@@ -271,10 +336,7 @@ function highlightWithSpaces(text, searchType) {
 
 
 
-ckIsCrow = document.getElementById('is-crow');
-let state = 2; // Initial state: indeterminate
-ckIsCrow.indeterminate=true;
-ckIsCrow.title = "No preference";
+
 function toggleCheckbox() {
     
     state = (state + 1) % 3; // Cycle through states: 0, 1, 2
@@ -312,6 +374,7 @@ function initiallise() {
     populateDropdown("os-sheet", "https://www.buddlepit.co.uk/api/getSheetList.php", "Sheet");    
     populateDropdown("site-type", "https://www.buddlepit.co.uk/api/getSiteTypeList.php", "Description");
     populateDropdown("product", "https://www.buddlepit.co.uk/api/getProductList.php", "Name");
+
 }
 
 function populateDropdown(dropdownId, url, bindToProperty) {
@@ -319,7 +382,21 @@ function populateDropdown(dropdownId, url, bindToProperty) {
         .then(response => response.json())
         .then(data => {
             const dropdown = document.getElementById(dropdownId);
+
+            lastProductPrimary = true;
             data.forEach(item => {
+                // Add ----------- to Products between Primary and Secondary products
+                if(dropdownId == "product") {
+                    if(!item.IsPrimary && lastProductPrimary) {
+                        const option = document.createElement('option');
+                        option.value = "";
+                        option.innerText = "-------------------------------";
+                        dropdown.appendChild(option);
+                    }
+                    lastProductPrimary = item.IsPrimary;
+                }
+
+
                 const option = document.createElement('option');
                 if(dropdownId == "os-sheet")
                     option.value = item.Sheet;
@@ -423,4 +500,72 @@ function validateLatLong(latLon) {
             
         document.getElementById("gridref").value = osgb.getGridRef(4);
     }
+}
+
+function selectResultDisplay() {
+    if(document.getElementById("search-summary").style.display == "none")
+        return;
+
+
+    var selectedIndex = document.getElementById('resultSelector').selectedIndex;
+
+    if (selectedIndex == 0) {
+        document.getElementById('data-table').style.display = 'block';
+        document.getElementById('divMap').style.display = 'none';
+    } else if (selectedIndex ==1) {
+        document.getElementById('data-table').style.display = 'none';
+        document.getElementById('divMap').style.display = 'block';
+    }
+}
+
+var map;
+var markerGroup;
+function initMap() {
+    map = L.map('divMap').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+
+    document.getElementById('divMap').style.display = 'none';
+}
+
+function showMapResults(mines) {
+    if(markerGroup != null)
+        markerGroup.clearLayers();
+
+    markerGroup = L.layerGroup().addTo(map);
+
+    mines.forEach(mine => {
+        if(mine.Lat != null && mine.Long != null) {
+            var marker = L.circleMarker([mine.Lat, mine.Long], {
+                radius: 7,
+                color: 'blue',
+                fillOpacity: 0
+            }
+                
+            ).addTo(markerGroup);
+            marker.bindTooltip(mine.Name);
+            marker.on('click', function(e) {
+                window.open(`./MineDetails.html?id=${btoa(mine.ID)}`, "_blank");
+            });
+            
+        }
+    });
+
+    
+    if(mines.length > 0) {
+        var groupBounds = L.latLngBounds(); // Initialize an empty bounds object
+
+        // Loop through each marker in the markerGroup and extend the bounds
+        markerGroup.eachLayer(function (marker) {
+            groupBounds.extend(marker.getLatLng());
+        });
+    
+        // Fit the map to the bounds
+        map.fitBounds(groupBounds);
+    }
+    
+
 }

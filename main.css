@@ -195,13 +195,19 @@
         text-align: left;
         vertical-align: top;
         padding: 10px;
-        border: 1px solid #dddddd;
+        border: .2px solid #0f0a14;
         font-size: 13px;
+    }
+
+    
+    .letterSearch {
+        color: #66BBF7
     }
 
     .letterSearch:hover {
         text-decoration: underline;
         cursor: pointer;
+        color:white
     }
 
     #spinner-container {
@@ -222,4 +228,18 @@
         color: black;
         padding: 20px;
         border-radius: 5px;
+      }
+      thead tr {
+        background-color: #0f0f16
+      }
+
+      tbody tr:nth-child(odd) {
+        background-color: #1f1f35;
+      }
+      tbody tr:nth-child(even) {
+        background-color: #1a1a30;
+      }
+      tbody tr:hover {
+        background-color: #185886; /* hover color */
+        cursor: pointer;
       }
