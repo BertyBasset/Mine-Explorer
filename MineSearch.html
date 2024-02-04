@@ -10,7 +10,7 @@
             // Set initial focus of quick search textbox
             document.addEventListener("DOMContentLoaded", function() {
                 ckIsCrow = document.getElementById('is-crow');
-                ckIsCrow.indeterminate=true;
+                ckIsCrow.indeterminate=false;
                 ckIsCrow.title = "No preference";
                 document.getElementById("quick-search").focus();
                 initMap();
@@ -33,7 +33,7 @@
             <a href="MineMapView.html">Map Explorer</a>
         </menu>
 
-        <br />
+
 
         <div id="spinner-container">
             <div id="spinner">Loading...</div>
@@ -45,7 +45,7 @@
                 <div class="centered-div">
 
 
-                    <div class="search-form" style="text-align: center;">
+                    <div class="search-form" style="text-align: center; margin-bottom: 12px; margin-top: 6px;">
                         Name starts with...&nbsp;&nbsp;&nbsp;  
                         <span class="letterSearch" onclick="letterSearch('A');">A</span> 
                         <span class="letterSearch" onclick="letterSearch('B');">B</span>  

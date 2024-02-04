@@ -5,7 +5,7 @@ window.onload = function() {
 }
 
 
-let state = 2; // Initial is-crow checkbox state: indeterminate
+let state = 0; // Initial is-crow checkbox state: indeterminate
 
 
 
@@ -21,7 +21,8 @@ function reset() {
     document.getElementById("gridref").value = "";
     document.getElementById("gridref").style.background = 'white';
     document.getElementById("distance").value = "";
-    document.getElementById("is-crow").indeterminate = true;
+    document.getElementById("is-crow").indeterminate = false;
+    document.getElementById("is-crow").checked = false;
     state = 2; // Initial state: indeterminate
     document.getElementById("name").focus();
 }
@@ -44,7 +45,7 @@ function search() {
         lon = parseFloat(document.getElementById("latlong").value.trim().split(",")[1]);
     }
     var distance = document.getElementById("distance").value.trim() == "" ? null : parseFloat(document.getElementById("distance").value.trim());
-    var isCrow = document.getElementById("is-crow").indeterminate ? null :(document.getElementById("is-crow").checked ? true : false);
+    var isCrow = document.getElementById("is-crow").indeterminate ? false :(document.getElementById("is-crow").checked ? true : null);
 
 
     startTime = performance.now();
@@ -345,17 +346,18 @@ function toggleCheckbox() {
         case 0:
             ckIsCrow.checked = false;
             ckIsCrow.indeterminate = false;
-            ckIsCrow.title = "Not Crow land";
+            ckIsCrow.title = "No preference";
             break;
-        case 1:
+         case 1:
+                ckIsCrow.checked = false;
+                ckIsCrow.indeterminate = true;
+                ckIsCrow.title = "Is not Crow land";
+                break;
+    
+        case 2:
             ckIsCrow.checked = true;
             ckIsCrow.indeterminate = false;
             ckIsCrow.title = "Is Crow land";
-            break;
-        case 2:
-            ckIsCrow.checked = false;
-            ckIsCrow.indeterminate = true;
-            ckIsCrow.title = "No preference";
             break;
     }
 }
@@ -521,7 +523,11 @@ function selectResultDisplay() {
 var map;
 var markerGroup;
 function initMap() {
-    map = L.map('divMap').setView([51.505, -0.09], 13);
+    map = L.map('divMap', {
+        zoomControl: false,
+        maxZoom:18,
+        minZoom:6
+    }).setView([51.505, -0.09], 13);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

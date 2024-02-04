@@ -120,6 +120,7 @@
     }
     button:hover {
         background-color: #1e6fa9;
+        cursor: pointer;
     }
 
 

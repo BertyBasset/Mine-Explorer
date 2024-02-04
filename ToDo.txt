@@ -1,6 +1,8 @@
-Details Page Main Page
+Add grid ref copy
+Leave blank Results
+Add - to blank Hist Start/EndDate
+Add child mines
 
-Map Results
 
 
-
+Then Resp Detail Page
