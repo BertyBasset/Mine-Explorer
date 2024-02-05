@@ -1,4 +1,4 @@
-const MAX_RESULTS = 500;
+const MAX_RESULTS = 1000;
 
 window.onload = function() {
     initiallise();
@@ -535,6 +535,8 @@ function initMap() {
     
 
     document.getElementById('divMap').style.display = 'none';
+
+
 }
 
 function showMapResults(mines) {
@@ -572,6 +574,7 @@ function showMapResults(mines) {
         // Fit the map to the bounds
         map.fitBounds(groupBounds);
     }
-    
-
 }
+
+
+

@@ -1,8 +1,16 @@
-Add grid ref copy
-Leave blank Results
-Add - to blank Hist Start/EndDate
-Add child mines
 
 
+Responsive Detail Page
+Responsive Search Page
 
-Then Resp Detail Page
+Map Explorer
+
+Change Request
+Editor
+
+
+<div id="d1" />
+<div id="d2" />
+
+
+<div id="d3" />

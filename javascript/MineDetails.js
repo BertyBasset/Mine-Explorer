@@ -87,21 +87,45 @@ function populateMineDetails(data) {
     addRow('Grid Ref', `<span class="letterSearch" title="Centre Map" onClick="centreMap()">${mine.GridRef}</span>`);
     addRow('Easting, Northing', `<span class="letterSearch" title="Centre Map" onClick="centreMap()">${mine.Easting + ', ' + mine.Northing}</span>`);
     addRow('IsCrow', mine.IsCrow ? "Yes"    : "No");    
-    addRow('Start Date', mine.WorkedStart);
-    addRow('End Date', mine.WorkedEnd);
-    addRow('History', mine.History,2);
-    addRow('Alternative Names', mine.MineNames,2);
-    addRow('Access', mine.AccessDetails,2);
-    addRow('Description', mine.Description,2);
-    addPublications('Links', data.Urls);
-    addPublications('Publications', data.Publications);
+    addRow('Start Date', mine.WorkedStart == '' ? '-' : mine.WorkedStart);
+    addRow('End Date', mine.WorkedEnd == '' ? '-' : mine.WorkedEnd);
+    
+    addChildMines(data.ChildMines);
+
+    if(mine.History != null && mine.History != '')
+        addRow('History', mine.History,2);
+    addRow('All Names', mine.MineNames,2);
+    if(mine.AccessDetails != null && mine.AccessDetails != '')
+        addRow('Access', mine.AccessDetails,2);
+    if(mine.Description != null && mine.Description != '')
+        addRow('Description', mine.Description,2);
+    if(data.Urls.length > 0)
+        addPublications('Links', data.Urls);
+    if(data.Publications.length > 0)
+        addPublications('Publications', data.Publications);
     var conservation = mine.NPRN == null ? '' : `NPRN: ${mine.NPRN}. `;
-    addRow('Conservation', conservation + mine.ConservationNotes, 2);
+    conservation += mine.ConservationNotes
+    if(conservation != '')
+        addRow('Conservation',conservation, 2);
  
     addMap(mine);;
 
     // Map must be added before nearest sites as it uses the map to add markers
     addNearestSites(data.NearestMines);
+}
+
+function addChildMines(childMines) {
+    if(childMines.length == 0) 
+        return;
+   
+    var separator = ",&nbsp;&nbsp;&nbsp; "
+    var list = '';
+    for (var m of childMines) {
+        url = `./MineDetails.html?id=${btoa(m.ID)}`;
+        list += `<span title="Open details in THIS tab" class="letterSearch" onclick="window.location.href='${url}'">${m.Name.replace(/ /g, '&nbsp;')}</span>${separator}`;
+    }
+        list = list.slice(0, -separator.length);
+        addRow('Child mines', list == ""? "-":list, 2);
 }
 
 
