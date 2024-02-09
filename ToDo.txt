@@ -1,16 +1,21 @@
+MAP EXPLORER
+   
+Oauth2 for Armchaor View
 
 
+Auth for Mapox?
+Auth for TileMaper?
+
+
+
+
+get gridref on click  
+
+
+MINE SEARCH
 Responsive Detail Page
 Responsive Search Page
-
-Map Explorer
-
 Change Request
 Editor
 
 
-<div id="d1" />
-<div id="d2" />
-
-
-<div id="d3" />

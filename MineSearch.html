@@ -4,7 +4,10 @@
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>       
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>                
         <script src="./javascript/os.js"></script>
+        <script src="./javascript/leaflet-header.js"></script> 
         <script src="./javascript/MineSearch.js"></script>
         <script>
             // Set initial focus of quick search textbox
@@ -13,7 +16,7 @@
                 ckIsCrow.indeterminate=false;
                 ckIsCrow.title = "No preference";
                 document.getElementById("quick-search").focus();
-                initMap();
+               
             });
         </script>
         <style>
@@ -138,9 +141,9 @@
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="product">Product:</label>
+                            <label for="product">Commodity:</label>
                             <select id="product" name="product">
-                                <option value="">[select product]</option>
+                                <option value="">[select commodity]</option>
                             </select>
                         </div>
 
@@ -183,7 +186,7 @@
                         <th>Location</th>
                         <th title="Does not imply right of access">Crow</th>
                         <th title="Corresponds to Buddlepit Forum Areas" style="width:85px">Area Name</th>
-                        <th>Products</th>
+                        <th>Commodity</th>
                         <th>Lat, Lon</th>
                         <th style="width:85px">Grid Ref</th>
                         <th title="Distance from specified Lat,Lon or GridRef">Distance</th>

@@ -1,13 +1,18 @@
 var id;
-var API_KEY_BING = "Aqv51PgdNN4aM7Zz0JO77lnhWrrV2r8EwSPJjsD0jMLSqqI93NKUCcuRAr8oMdO8";     
 
-window.onload = function() {
 
+document.addEventListener("DOMContentLoaded", async function() {
+    await fetchToken();
+    loadPage();
+});
+
+
+function loadPage() {
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const encryptedId = urlParams.get('id');
-        id = atob(encryptedId);
-    } catch (error) {
+        id = atob(encryptedId);                 // Put off the most casual of user from changing the URL
+    } catch (error) {                          
         alert('Invalid Mine ID');
         return;
     }
@@ -15,49 +20,78 @@ window.onload = function() {
     fetch(`https://www.buddlepit.co.uk/api/getMineDetails.php?MineID=${id}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             populateMineDetails(data);
         })
         .catch(error => {
             console.error('Error:', error);
         });
+}
 
 
 
-};
-
+// Mapping Stuff
 var centreLatLong;
 var map;
+var tileServer;
+var displayLayer;
 function addMap(mine) { 
-  
-
     centreLatLong  =[parseFloat(mine.Lat), parseFloat(mine.Long)];
 
 
-     map = L.map('divMap', {
-        zoomControl: false,
-        maxZoom:17,
-        minZoom:12
-    }).setView(centreLatLong, 14); // Set the initial view and zoom level
+    // Projection Info for OS
+    const mapOptionsCrs = {
+        crs: new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
+            resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75 ],
+            origin: [ -238375.0, 1376256.0 ]
+        }),
+        minZoom: 4,
+        maxZoom: 10,
+        center: [51.5,0],
+        zoom: 9,
+        maxBounds: [
+            [49.5,-11],
+            [61.2, 5]
+        ],
+        attributionControl: true,
+        zoomControl: false
+    };
+
+    map = L.map('divMap', mapOptionsCrs);
 
     // Init OS Map Layer
-    var osLayer = L.tileLayer.bing(API_KEY_BING, { 
-        opacity: 1, 
-        zIndex: 0, 
-        attribution: 'Bing Maps, OS Maps'
-    });
-    osLayer.addTo(map);
-  
+    tileServer =  {
+        name: "GB - OS Leisure",
+        url: `https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.jpg`,
+       
+        options: {
+            attribution: `OS data &copy; Crown ${new Date().getFullYear()}.`  ,
+            minZoom: 4,
+            maxZoom: 11,       
+        }
+    } 
+
+    // Use overloaded L.TileLayerWithHeaders to add the bearer token to the request
+    displayLayer = new L.TileLayerWithHeaders(
+        tileServer.url,
+        tileServer.options,
+        [{ header: 'Authorization', value: 'Bearer ' + bearerToken }]
+    ).addTo(map);
+
+
+    map.setView(centreLatLong, 9); // Set the initial view and zoom level
 
     var marker = L.marker(centreLatLong).addTo(map); // [latitude, longitude]
     marker.bindTooltip(mine.Name);
 }
 
 function centreMap() {
-    map.setView(centreLatLong, 14);
+    map.setView(centreLatLong, 9);
 }
 
 
+
+
+// Data Popluation
 function populateMineDetails(data) {
     var mine = data.Mine[0];
     
@@ -74,7 +108,7 @@ function populateMineDetails(data) {
     addRow('Name', mine.Name);
     var url = `./MineDetails.html?id=${btoa(mine.ParentMineID)}`;
     addRow('Parent Mine', mine.ParentMineName == null? "-" : `<span title="Open  '${mine.ParentMineName}' details in THIS tab." class="letterSearch" onclick="window.location.href='${url}'">${mine.ParentMineName}</span>`);
-    addRow('Products', mine.Products);
+    addRow('Commodity', mine.Products);
     addRow('Location', mine.Location);
     url = `https://www.buddlepit.co.uk/community/index.php?forums/${mine.ForumID}/`;
     addRow('Area', `<span title="Open Buddlepit ${mine.AreaName} area forum in a NEW tab." class="letterSearch" onclick="window.open('${url}', '_blank')">${mine.AreaName}</span>`);
@@ -208,6 +242,57 @@ function addPublications(title, list) {
         else
             cell2.innerHTML = list[i].Value;
     }
-
 }
+
+
+
+
+
+
+
+// OS Map OAuth Stuff
+var bearerToken;                    // This should always be the latest valid access token
+let tokenExpirationTime;
+const tokenRenewalThreshold = 60 * 1000; // Renew token 1 minute before expiry (in milliseconds)
+
+// Make these funciton async so that we can await the fetchToken function and 
+// ensure the token is fetched before getting the map
+
+async function fetchToken() {
+    // Make a request to your PHP script to fetch the access token from the OS Maps API
+    // Update the bearerToken variable with the fetched token
+    // Update the tokenExpirationTime variable with the expiration time
+    
+    await fetch(`https://www.buddlepit.co.uk/api/getBearerToken.php`)
+    .then(response => response.json())
+    .then(data => {
+
+        bearerToken = data.access_token; // Placeholder for the fetched access token
+        tokenExpirationTime = Date.now() + (data.expires_in * 1000); // Convert expires_in to milliseconds and add to current time        
+        console.log(`Token fetched: ${bearerToken}, expires in: ${data.expires_in} seconds, at: ${new Date(tokenExpirationTime).toLocaleString()}`);
+        if(displayLayer != null) {
+            displayLayer.headers = [{ header: 'Authorization', value: 'Bearer ' + bearerToken }];
+            console.log('Token added to map layer');
+        }
+        
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+    });
+
+    // Calculate the time until token expiration
+    const timeUntilExpiry = tokenExpirationTime - Date.now();
+    var t = timeUntilExpiry - tokenRenewalThreshold;
+
+    console.log(`timeout set for ${t/1000}s`);
+    setTimeout(fetchToken, t);
+}
+
+
+
+
+
+
 

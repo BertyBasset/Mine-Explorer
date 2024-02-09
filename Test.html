@@ -1,37 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Display a map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
-    #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-    }
-  </style>
-</head>
-<body>
-  <div id="map"></div>
-</body>
-<script>
-  const key = '6UgoRH2zaorsOhuy5tOv';
-
-  const map = L.map('map').setView([55,-2], 12);
-  const layer = L.tileLayer(`https://api.maptiler.com/tiles/uk-osgb1888/{z}/{x}/{y}?key=${key}`,{
-    tileSize: 512,
-    zoomOffset: -1,
-    minZoom: 1,
-    attribution: "\u003ca href=\"https://www.maptiler.com/copyright/\" target=\"_blank\"\u003e\u0026copy; MapTiler\u003c/a\u003e \u003ca href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\"\u003e\u0026copy; OpenStreetMap contributors\u003c/a\u003e"
-  }).addTo(map);
-</script>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Display a map in Cesium JS</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.98/Build/Cesium/Cesium.js"></script>
+    <style>
+      @import url(https://cesium.com/downloads/cesiumjs/releases/1.98/Build/Cesium/Widgets/widgets.css);
+      #cesiumContainer {position: absolute; top: 0; right: 0; bottom: 0; left: 0;}
+    </style>
+  </head>
+  <body>
+    <div id="cesiumContainer">
+      <a href="https://www.maptiler.com" style="position:absolute;right:10px;bottom:10px;z-index:999;"><img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"></a>
+    </div>
+    <script>
+    const key = '6UgoRH2zaorsOhuy5tOv';
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      animation: false,
+      baseLayerPicker: false,
+      navigationHelpButton: false,
+      sceneModePicker: false,
+      homeButton: false,
+      geocoder: false,
+      fullscreenButton: false,
+      imageryProvider: new Cesium.UrlTemplateImageryProvider({
+        url: `https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=${key}`,
+        minimumLevel: 0,
+        maximumLevel: 20,
+        tileWidth: 512,
+        tileHeight: 512,
+        credit: new Cesium.Credit("\u003ca href=\"https://www.maptiler.com/copyright/\" target=\"_blank\"\u003e\u0026copy; MapTiler\u003c/a\u003e \u003ca href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\"\u003e\u0026copy; OpenStreetMap contributors\u003c/a\u003e", true)
+      }),
+      timeline: false,
+      terrainProvider: new Cesium.CesiumTerrainProvider({
+        url: `https://api.maptiler.com/tiles/terrain-quantized-mesh-v2/?key=${key}`,
+        credit: new Cesium.Credit("\u003ca href=\"https://www.maptiler.com/copyright/\" target=\"_blank\"\u003e\u0026copy;MapTiler\u003c/a\u003e \u003ca href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\"\u003e\u0026copy; OpenStreetMap contributors\u003c/a\u003e", true),
+        requestVertexNormals: true
+      })
+    });
+    viewer.camera.setView({
+      destination: Cesium.Cartesian3.fromDegrees(-3, 57.72, 4500),
+      orientation: {
+        pitch: Cesium.Math.toRadians(-20)
+      }
+    });
+    </script>
+  </body>
 </html>

@@ -11,13 +11,19 @@ BEGIN
     SET @json_output = (
         SELECT JSON_ARRAYAGG(
                    JSON_OBJECT(
-                       'Id', M.Id,
+                       'ID', M.Id,
                        'Name', M.Name,
                        'Lat', M.Lat,
                        'Long', M.Long,
-                       'GridRef', M.GridRef,
-                       'IsCrow', IF(M.IsCrow, 'true', 'false'),
-                       'Description', M.Description,
+                      #'GridRef', M.GridRef,
+                       'IsCrow', IF(M.IsCrow, TRUE, FALSE),
+                       'Description', TRIM(CONCAT(TRIM(IFNULL(M.History, '')), ' ', TRIM(IFNULL(M.AccessDetails, '')), ' ', TRIM(IFNULL(M.Description, '')))),
+						     'HasDescription', CASE WHEN TRIM(CONCAT(TRIM(IFNULL(M.History, '')), ' ', TRIM(IFNULL(M.AccessDetails, '')), ' ', TRIM(IFNULL(M.Description, '')))) = '' THEN FALSE ELSE TRUE END,
+							  'HasLinks', CASE WHEN EXISTS (SELECT 1 FROM Url WHERE MineID = M.ID) THEN TRUE ELSE FALSE END,
+							  'HasPublications', CASE WHEN EXISTS (SELECT 1 FROM Publication WHERE MineID = M.ID) THEN TRUE ELSE FALSE END,							  
+                       'AreaID', M.AreaID,
+                      
+                       'SiteTypeID', M.SiteTypeID,
                        'Names', (
                            SELECT JSON_ARRAYAGG(
                                       JSON_OBJECT(
@@ -30,7 +36,8 @@ BEGIN
                        'Products', (
                            SELECT JSON_ARRAYAGG(
                                       JSON_OBJECT(
-                                          'Product', P.Name
+                                      	
+                                          'ID', P.ID, 'Product', P.Name
                                       )
                                   )
                            FROM MineProduct MP

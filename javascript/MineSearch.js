@@ -1,14 +1,18 @@
-const MAX_RESULTS = 1000;
 
-window.onload = function() {
+const MAX_RESULTS = 1000;
+var init;
+
+document.addEventListener("DOMContentLoaded", async function() {
+    await fetchToken();
     initiallise();
-}
+    initMap();
+});
 
 
 let state = 0; // Initial is-crow checkbox state: indeterminate
 
 
-
+// Search Stuff
 function reset() {
     document.getElementById("name").value = "";
     document.getElementById("text").value = "";
@@ -412,14 +416,17 @@ function populateDropdown(dropdownId, url, bindToProperty) {
     );
 }
 
-// Ensure that the min and max attributes of the number input are set correctly
+
+
+
+
+// Data Validation
 function updateMinMax(input) {
     if (input.value === '') {
         return
     }
 
     var value = parseInt(input.value);
-
 
     // Check if the value is less than the minimum
     if (value < parseInt(input.min)) {
@@ -468,15 +475,11 @@ function validateGridRef(gridRef) {
     } 
 }
 
-
 function validateLatLong(latLon) {
     if(latLon.value == "") {
         document.getElementById("gridref").value = "";
         return;
     }
-
-
-
 
     if (!latLon.checkValidity() && latLon.value !== '') {
         latLon.style.background = 'red';
@@ -493,10 +496,8 @@ function validateLatLong(latLon) {
         var lat = parseFloat(arr[0]);
         var lon = parseFloat(arr[1]);
 
-        
         latLon.value = lat.toFixed(4) + ", " + lon.toFixed(4);
         wgs84 = new GT_WGS84();
-
         wgs84.setDegrees(lat, lon);
         osgb=wgs84.getOSGB();
             
@@ -520,19 +521,54 @@ function selectResultDisplay() {
     }
 }
 
+
+
+// Map Stuff
 var map;
 var markerGroup;
+var displayLayer;
 function initMap() {
-    map = L.map('divMap', {
-        zoomControl: false,
-        maxZoom:18,
-        minZoom:6
-    }).setView([51.505, -0.09], 13);
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-    
+    const mapOptionsCrs = {
+        crs: new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
+            resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75 ],
+            origin: [ -238375.0, 1376256.0 ]
+        }),
+        minZoom: 0,
+        maxZoom: 9,
+        center: [51.5,0],
+        zoom: 9,
+        maxBounds: [
+            [49.5,-11],
+            [61.2, 5]
+        ],
+        attributionControl: true,
+        zoomControl: false
+    };
+
+
+     map = L.map('divMap', mapOptionsCrs);
+     var tileServer =  {
+        name: "GB - OS Leisure",
+        url: `https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.jpg`,
+        options: {
+            attribution: `OS data &copy; Crown ${new Date().getFullYear()}.`  ,
+            minZoom: 0,
+            maxZoom: 9,         
+        }
+    } 
+    //displayLayer = L.tileLayer.wms(tileServer.url, tileServer.options);
+    //layer.addTo(map);
+
+
+
+    // Use overloaded L.TileLayerWithHeaders to add the bearer token to the request
+    displayLayer = new L.TileLayerWithHeaders(
+        tileServer.url,
+        tileServer.options,
+        [{ header: 'Authorization', value: 'Bearer ' + bearerToken }]
+    ).addTo(map);
+
 
     document.getElementById('divMap').style.display = 'none';
 
@@ -576,5 +612,47 @@ function showMapResults(mines) {
     }
 }
 
+
+
+
+// OS Map OAuth Stuff
+var bearerToken;                    // This should always be the latest valid access token
+let tokenExpirationTime;
+const tokenRenewalThreshold = 60 * 1000; // Renew token 1 minute before expiry (in milliseconds)
+
+// Make these funciton async so that we can await the fetchToken function and 
+// ensure the token is fetched before getting the map
+
+async function fetchToken() {
+    // Make a request to your PHP script to fetch the access token from the OS Maps API
+    // Update the bearerToken variable with the fetched token
+    // Update the tokenExpirationTime variable with the expiration time
+    
+    await fetch(`https://www.buddlepit.co.uk/api/getBearerToken.php`)
+    .then(response => response.json())
+    .then(data => {
+
+        bearerToken = data.access_token; // Placeholder for the fetched access token
+        tokenExpirationTime = Date.now() + (data.expires_in * 1000); // Convert expires_in to milliseconds and add to current time        
+        console.log(`Token fetched: ${bearerToken}, expires in: ${data.expires_in} seconds, at: ${new Date(tokenExpirationTime).toLocaleString()}`);
+        if(displayLayer != null) {
+            displayLayer.headers = [{ header: 'Authorization', value: 'Bearer ' + bearerToken }];
+            console.log('Token added to map layer');
+        }
+        
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+    });
+
+    // Calculate the time until token expiration
+    const timeUntilExpiry = tokenExpirationTime - Date.now();
+    var t = timeUntilExpiry - tokenRenewalThreshold;
+
+    console.log(`timeout set for ${t/1000}s`);
+    setTimeout(fetchToken, t);
+}
 
 

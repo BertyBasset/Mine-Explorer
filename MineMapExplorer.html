@@ -1,19 +1,181 @@
+
 <html>
     <head>
-        <title>Mine Map Explorer</title>
+        <title>The Armchair Mine Explorer</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+        <script src="plugins/leaflet-PruneCluster.js"></script>
+        <link href='plugins/leaflet-PruneCluster.css' rel='stylesheet' />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <script src="./javascript/leaflet-http-header.js"></script>
+        <script src="./javascript/MineMapExplorer.js"></script>   
 
-        <script src="./javascript/MineMapExplorer.js"></script>        
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            #divMap {
+                width: 100%;
+                height: 100%;
+                position: relative;
+            }
+            #selMapLayer {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                z-index: 1000;
+                font-size: 18px;
+                height: 30px;
+                border-width: 2px;
+                background-color: rgb(255,255,255, .7);
+            }
+            #divMines {
+                position: absolute;
+                top: 50px;
+                left: 8px;
+                z-index: 1000;
+                background-color:rgb(255,255,255, .7);
+                width: 220px;
+                height: 30px;
+            }   
+
+            #divFilter {
+                position: absolute;
+                top: 90px;
+                left: 8px;
+                z-index: 1000;
+                background-color: rgb(255,255,255, .7);
+                width: 500px;
+                height: 320px;
+                border-radius: 4px;
+                border: solid 1px #000000;
+                visibility: hidden;
+            }       
+            #btnFilter {
+                position: absolute;
+                top: 90px;
+                left: 8px;
+                z-index: 2000;
+                background-color: rgb(255,255,255, .7);
+                width: 30px;
+                height: 29px;
+                border-radius: 4px;
+                border: solid 1px #000000;
+            }     
+
+            
+            #divFilterBanner {
+                text-align: center;
+                width: 100%;
+                position: absolute;
+                Margin: auto auto;
+                font-size: 20px;
+                background-color: #185886;
+                color: white;
+
+            }
+         
+
+            input[type=checkbox] {
+                width: 20px;
+                height: 20px;
+            }
+
+            #spnShowMines {
+
+                font-size: 20px;
+            }
+            input[type=checkbox],
+            select,
+            input[type=text],
+            input[type=button],
+            label {
+                font-size: 20px;
+                position: absolute;
+                z-index: 1000; 
+            }
+            input[type=button] {
+                width: 100px;
+                height: 30px;
+                border-width: 2px;
+
+            }
+
+            select,
+            input[type=text] {
+                width:250px; 
+                height: 30px; border-width: 2px; 
+                background-color: rgb(255,255,255, .7);
+            }
+            #imgIcon  {
+                width:22px;position:relative;top:4px;left:4px
+            }
+            #spnShowMines {
+                position: relative;
+                left: 6px;
+                top: 1px;
+            }
+            #myCheckbox {
+                position: relative;
+                top: 2px;
+            }
+            #selMapLayer {
+                width: 360px;
+            }
+
+
+        </style>
+
 
     </head>
-    <body style="margin:0">
-        <div id="divMap" style="width: 100%; height: 100%; position: relative;">
-            <select id="selMapLayer" style="position: absolute; top:10px; left: 10px; z-index:1000" />
+    <body>
+        <div id="divMap">
+            <select id="selMapLayer"></select>
+            <div id="divMines">                <input type="checkbox" onclick="chkMines_CheckedChange(this.checked);" id="chkShowMines" checked="true">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="spnShowMines">Show me the Mines!</span>
+            </div>
+            <!-- Kepp Zoom text box for debugging-->
+            <input id="txtZoom" style="visibility:hidden; position: absolute; width:100px;top: 10px; left: 400px; z-index: 1000; font-size: 20px;"></text>
+            <div id="btnFilter"><img id="imgIcon" onclick="toggleFilterDisplay();" src="./open-iconic/svg/chevron-right.svg" alt="Toggle Filter" title="Toggle Filter Selector"></div>
+            <div id="divFilter"">
+                <div id="divFilterBanner">Mine Filters</div>
+                
+                <label for="selSiteType" style="top: 50px; left: 10px;">Site Type:</label>
+                <select id="selSiteType" style="top: 50px; left: 130px;  "><option value="">[select site type]</option></select>
+                
+                <label for="selProduct" style="top: 90px; left: 10px;">Commodity:</label>
+                <select id="selProduct" style="top: 90px; left: 130px; "><option value="">[select commodity]</option></select>
+                
+                <label for="selArea"      style="top: 130px; left: 10px;">Area:</label>
+                <select id="selArea"      style="top: 130px; left: 130px;"><option value="">[select area]</option></select>
+
+                <label for="txtName"   style="top: 170px; left: 10px; ">Name:</label>
+                <input type="text" id="txtName"  style="top: 170px; left: 130px;"/>
+
+                <label for="txtFreeText"   style="top: 210px; left: 10px; ">Free Text:</label>
+                <input type="text" id="txtFreeText"  style="top: 210px; left: 130px;"/>
+                
+
+
+                 <label for="chkIsCrow"                       style="top: 45px; right:45px;" >Is Crow:</label>
+                 <input type="checkbox" id="chkIsCrow"         style="top: 50px; right: 15px"/>
+
+                 <label for="chkHasTextFields"                style="top :85px; right: 45px;">Has Text Fields:</label>
+                 <input type="checkbox" id="chkHasTextFields" style="top: 90px; right: 15px"/>
+
+                 <label for="chkHasLinks"                     style="top: 125px; right: 45px; ">Has Links:</label>
+                 <input type="checkbox" id="chkHasLinks"      style="top: 130px; right: 15px"/>
+
+                 <label for="chkHasReferences"                style="top: 165px; right: 45px; ">Has References:</label>
+                 <input type="checkbox" id="chkHasReferences" style="top: 170px; right: 15px"/>
+
+                  <input type="button" id="btnRemoveFilter" disabled="disabled" value="Remove" onclick="removeFilter();" style="bottom: 15px; left: 190px;"/>
+                  <input type="button" id="btnApplyFilter" value="Apply" onclick="applyFilter();" style="bottom: 15px; right: 190px;"/>
+
+            </div>
         </div>
     </body>
 </html>     
