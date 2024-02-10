@@ -1,9 +1,6 @@
 MAP EXPLORER
    
-Oauth2 for Armchaor View
 
-
-Auth for Mapox?
 Auth for TileMaper?
 
 

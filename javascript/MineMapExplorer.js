@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
                 },
                 isCrs: false,
+                addOriginHeader: false,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                         maxZoom:18,
                 },
                 isCrs: false,
-
+                addOriginHeader: false,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -130,6 +131,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                         maxZoom:18,                     
                 },
                 isCrs: false,
+                addOriginHeader: false,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -146,6 +148,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 },
 
                 isCrs: true,
+                addOriginHeader: false,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -160,6 +163,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     maxZoom: 9,       
                 },        
                 isCrs: true,
+                addOriginHeader: false,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -177,6 +181,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     crossOrigin: false
                 },
                 isCrs: false,
+                addOriginHeader: true,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -194,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     crossOrigin: false
                 },
                 isCrs: false,
-
+                addOriginHeader: true,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -212,6 +217,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     crossOrigin: false
                 },
                 isCrs: false,
+                addOriginHeader: true,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -229,6 +235,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     crossOrigin: false
                 },
                 isCrs: false,
+                addOriginHeader: true,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -246,7 +253,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     crossOrigin: false
                 },
                 isCrs: false,
-
+                addOriginHeader: true,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -264,6 +271,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     crossOrigin: false
                 },
                 isCrs: false ,
+                addOriginHeader: true,
                 maxBounds: [
                     [49.5,-9.7],
                     [61.2, 5]
@@ -281,7 +289,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     crossOrigin: false
                 },
                 isCrs: false,
-
+                addOriginHeader: true,
                 maxBounds: [
                     [51.4,-10.5],
                     [55.5, -5.7]
@@ -304,6 +312,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     transparent: true,
                 },
                 isCrs: false ,
+                addOriginHeader: false,                
                 maxBounds: [
                     [51.3,-5.5],
                     [53.4, -2.6]
@@ -324,6 +333,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                     maxZoom:18,            
                 },
                 isCrs: false  ,
+                addOriginHeader: false,                
                     maxBounds: [
                     [49.8,-6.3],
                     [55.8, 2.2]
@@ -392,8 +402,6 @@ function loadPage() {
     tileServers.forEach(function(tileServer) {
        var layer;
        if(tileServer.isCrs) {
-       
-
             // This extension comes from leaflet-http-header
             // and allows header to be added to leaflet wms tile request
             layer =  L.TileLayer.wmsHeader(
