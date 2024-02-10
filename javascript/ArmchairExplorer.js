@@ -8,6 +8,9 @@ var availableLayers = [];
 var currentLayers = [];
 var map;
 
+
+var osLayers = [];
+
 var keys;
 var isCrs = false;
 var mapCenter;
@@ -412,6 +415,7 @@ function loadPage() {
                 ],
                 null
             )
+            osLayers.push(layer);
         } else 
             layer = L.tileLayer.wms(tileServer.url, tileServer.options);
 
@@ -814,10 +818,12 @@ async function fetchToken() {
         tokenExpirationTime = Date.now() + (data.expires_in * 1000); // Convert expires_in to milliseconds and add to current time        
         console.log(`Token fetched: ${bearerToken}, expires in: ${data.expires_in} seconds, at: ${new Date(tokenExpirationTime).toLocaleString()}`);
 
-        for(var l of availableLayers) {
-            if(l.isCrs)
-                l.headers = [{ header: 'Authorization', value: 'Bearer ' + bearerToken }];
-                console.log(`Token added to map layer${l.Name}`);
+        for(var l of osLayers) {
+            //console.log(JSON.stringify(l));
+
+            l.headers = [{ header: 'Authorization', value: 'Bearer ' + bearerToken }];
+                //console.log(`Token added to map layer${l.url}`);
+           // console.log(JSON.stringify(l));
         }
 
 

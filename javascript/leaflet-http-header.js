@@ -25,6 +25,8 @@ async function fetchImage(url, callback, headers, abort, requests) {
   };
   requests.push(request);
 
+
+/*
   fetch(url, {
     method: "GET",
     headers: _headers,
@@ -34,6 +36,34 @@ async function fetchImage(url, callback, headers, abort, requests) {
     const blob = await f.blob();
     callback(blob);
   });
+*/
+
+fetch(url, {
+  method: "GET",
+  headers: _headers,
+  mode: "cors",
+  signal: signal
+}).then(async f => {
+  if (f.ok) {
+      const blob = await f.blob();
+      callback(blob);
+  } else {
+      // Handle other HTTP errors here if needed
+      //console.error('Error fetching image:', f.status);
+      var silent1;
+  }
+}).catch(error => {
+  if (error.name === 'AbortError') {
+    var silent2;
+      //console.log('Fetch request aborted');
+  } else {
+      //console.error('Fetch request failed:', error);
+      var silent3;
+  }
+});
+
+
+
 }
 
 L.TileLayer.WMSHeader = L.TileLayer.WMS.extend({

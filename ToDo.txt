@@ -1,8 +1,6 @@
 MAP EXPLORER
    
 
-Auth for TileMaper?
-
 
 
 

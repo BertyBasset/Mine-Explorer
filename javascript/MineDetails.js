@@ -70,11 +70,13 @@ function addMap(mine) {
         }
     } 
 
-    // Use overloaded L.TileLayerWithHeaders to add the bearer token to the request
-    displayLayer = new L.TileLayerWithHeaders(
+    displayLayer=  L.TileLayer.wmsHeader(
         tileServer.url,
         tileServer.options,
-        [{ header: 'Authorization', value: 'Bearer ' + bearerToken }]
+        [
+            { header: 'Authorization', value: `Bearer ${bearerToken}` }
+        ],
+        null
     ).addTo(map);
 
 

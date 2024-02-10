@@ -2,8 +2,8 @@
 // Allow requests from any origin
 header("Access-Control-Allow-Origin: *");
 
-$clientId = "9GbhH3gT4I4yfbXaj3aEOiC1GtOWpMJH";                 // Probably need to be in environment variables
-$clientSecret = "tKTKrfMZyumOYn06";
+$clientId = "CLIENTID";                 // Probably need to be in environment variables
+$clientSecret = "CLIENTSECRET";
 
 // Set up cURL to make the request
 $ch = curl_init("https://api.os.uk/oauth2/token/v1");
