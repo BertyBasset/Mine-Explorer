@@ -511,6 +511,7 @@ function selectedLayerChanged() {
 }
 
 function getAllMines() {
+
     fetch(`https://www.buddlepit.co.uk/api/getAllMines.php?s`)
         .then(response => response.json())
         .then(data => {
@@ -520,6 +521,7 @@ function getAllMines() {
             populateClusterFromFilteredMines();
          })
         .catch(error => {
+            alert(error);
             console.error('Error loading all mines:', error);
         });
 }
@@ -582,7 +584,13 @@ function populateClusterFromFilteredMines() {
 
 
     clusterMines = new PruneClusterForLeaflet();
-    clusterMines.Cluster.Size = 5;
+    
+    // Maybe change this with zoom level??
+    
+    clusterMines.Cluster.Size = 4;
+
+
+
 
     clusterBounds = L.latLngBounds();
     for(mine of filteredMines) {
@@ -675,9 +683,9 @@ function applyFilter() {
         // Check if the item meets the criteria
         return (
             (isCrow === false || item.IsCrow === isCrow) &&
-            (hasDecription === false || item.HasDescription === hasDecription) &&
+            (hasDecription === false || item.HasDesc === hasDecription) &&
             (hasLinks === false || item.HasLinks === hasLinks) &&
-            (hasPublication === false || item.HasPublications === hasPublication) &&
+            (hasPublication === false || item.HasPub === hasPublication) &&
             (siteTypeId === '' || item.SiteTypeID == siteTypeId) &&
             (areaId === '' || item.AreaID == areaId) &&
 
@@ -688,7 +696,7 @@ function applyFilter() {
                 item.Names && item.Names.some(function(name) {
                     return name.Name.toLowerCase().includes(nameSearch.toLowerCase());
                 })) &&
-            (descSearch === '' || descSearch === 'desc' || item.Description.toLowerCase().includes(descSearch.toLowerCase()))
+            (descSearch === '' || descSearch === 'desc' || item.Desc.toLowerCase().includes(descSearch.toLowerCase()))
         );
     });
     

@@ -1,10 +1,9 @@
 MAP EXPLORER
    
 
-
-
-
 get gridref on click  
+get geology on click
+have separations for close locations
 
 
 MINE SEARCH

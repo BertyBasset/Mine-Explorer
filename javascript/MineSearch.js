@@ -289,8 +289,11 @@ function highlightLocation(text, searchType) {
 
 
 function highlightProduct(text, searchType) {
+
+
+
     //                           detail, letter, quick
-    if(text == null)
+    if(text == null )
         return text;
 
     if(searchType == "quick" || searchType == "detail") {
@@ -300,9 +303,11 @@ function highlightProduct(text, searchType) {
         else {
             var ddlP  = document.getElementById("product");
             search = ddlP.options[ddlP.selectedIndex].text;
-            if(search == "")
+            if(search == "" || search=="[select commodity]")
                 return text;        
         }
+
+
 
         let regexPattern = new RegExp(search, "gi");
         let highlightedHtml = text.replace(regexPattern, (match) => {

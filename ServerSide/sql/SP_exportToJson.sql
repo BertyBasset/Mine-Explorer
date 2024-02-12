@@ -17,10 +17,10 @@ BEGIN
                        'Long', M.Long,
                       #'GridRef', M.GridRef,
                        'IsCrow', IF(M.IsCrow, TRUE, FALSE),
-                       'Description', TRIM(CONCAT(TRIM(IFNULL(M.History, '')), ' ', TRIM(IFNULL(M.AccessDetails, '')), ' ', TRIM(IFNULL(M.Description, '')))),
-						     'HasDescription', CASE WHEN TRIM(CONCAT(TRIM(IFNULL(M.History, '')), ' ', TRIM(IFNULL(M.AccessDetails, '')), ' ', TRIM(IFNULL(M.Description, '')))) = '' THEN FALSE ELSE TRUE END,
+                       'Desc', TRIM(CONCAT(TRIM(IFNULL(M.History, '')), ' ', TRIM(IFNULL(M.AccessDetails, '')), ' ', TRIM(IFNULL(M.Description, '')))),
+						     'HasDesc', CASE WHEN TRIM(CONCAT(TRIM(IFNULL(M.History, '')), ' ', TRIM(IFNULL(M.AccessDetails, '')), ' ', TRIM(IFNULL(M.Description, '')))) = '' THEN FALSE ELSE TRUE END,
 							  'HasLinks', CASE WHEN EXISTS (SELECT 1 FROM Url WHERE MineID = M.ID) THEN TRUE ELSE FALSE END,
-							  'HasPublications', CASE WHEN EXISTS (SELECT 1 FROM Publication WHERE MineID = M.ID) THEN TRUE ELSE FALSE END,							  
+							  'HasPub', CASE WHEN EXISTS (SELECT 1 FROM Publication WHERE MineID = M.ID) THEN TRUE ELSE FALSE END,							  
                        'AreaID', M.AreaID,
                       
                        'SiteTypeID', M.SiteTypeID,
