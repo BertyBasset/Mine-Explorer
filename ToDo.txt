@@ -1,9 +1,14 @@
 MAP EXPLORER
-   
+
+Add Autofit option for filters
+Make Map resp scale x2
+
 
 get gridref on click  
 get geology on click
-have separations for close locations
+Go to location
+Colour pins
+
 
 
 MINE SEARCH
@@ -11,5 +16,17 @@ Responsive Detail Page
 Responsive Search Page
 Change Request
 Editor
+
+
+To Do
+Alderley Links
+SiteType
+separate close mines
+
+Compare Peak against Mineral Layer
+
+
+
+Login Cookie
 
 

@@ -138,7 +138,7 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="spnShowMines">Show me the Mines!</span>
             </div>
             <!-- Kepp Zoom text box for debugging-->
-            <input id="txtZoom" style="visibility:hidden; position: absolute; width:100px;top: 10px; left: 400px; z-index: 1000; font-size: 20px;"></text>
+            <input id="txtZoom" style="visibility:hidden; position: absolute; width:250px;top: 10px; left: 400px; z-index: 1000; font-size: 20px;"></text>
             <div id="btnFilter"><img id="imgIcon" onclick="toggleFilterDisplay();" src="./open-iconic/svg/chevron-right.svg" alt="Toggle Filter" title="Toggle Filter Selector"></div>
             <div id="divFilter"">
                 <div id="divFilterBanner">Mine Filters</div>
@@ -171,6 +171,11 @@
 
                  <label for="chkHasReferences"                style="top: 165px; right: 45px; ">Has References:</label>
                  <input type="checkbox" id="chkHasReferences" style="top: 170px; right: 15px"/>
+
+                 <label for="chkAutofit"                style="top: 275px; right: 45px; " title="Autofit map to displayed pins">Autofit:</label>
+                 <input type="checkbox" checked id="chkAutofit" style="top: 280px; right: 15px" title="Autofit map to displayed pins"/>
+
+
 
                   <input type="button" id="btnRemoveFilter" disabled="disabled" value="Remove" onclick="removeFilter();" style="bottom: 15px; left: 190px;"/>
                   <input type="button" id="btnApplyFilter" value="Apply" onclick="applyFilter();" style="bottom: 15px; right: 190px;"/>

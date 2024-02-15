@@ -398,7 +398,18 @@ function loadPage() {
     map = L.map('divMap',mapOptionsNonCrs);
     map.on('zoom', fixZoom);
     map.on('zoomend', function() {
-        document.getElementById("txtZoom").value =  map.getZoom();
+        var currentZoom = map.getZoom();
+        var maxZoom = currentLayers[0].options.maxZoom;
+        document.getElementById("txtZoom").value =  `Zoom: ${currentZoom}: maxZoom: ${maxZoom}`;
+
+        if(currentZoom ==  maxZoom)
+            clusterMines.Cluster.Size = .1;
+        else
+            clusterMines.Cluster.Size = 6;
+        
+        
+
+
     });
 
     
@@ -445,7 +456,15 @@ function showLayers(layerIndices) {
         map = L.map('divMap', newMapOptions)
         map.on('zoom', fixZoom);
         map.on('zoomend', function() {
-            document.getElementById("txtZoom").value =  map.getZoom();
+            var currentZoom = map.getZoom();
+            var maxZoom = currentLayers[0].options.maxZoom;
+            document.getElementById("txtZoom").value =  `Zoom: ${currentZoom}: maxZoom: ${maxZoom}`;
+
+            if(currentZoom ==  maxZoom)
+            clusterMines.Cluster.Size = .1;
+        else
+            clusterMines.Cluster.Size = 6;            
+
         });
 
         isCrs = tileServers[layerIndices[0]].isCrs;
@@ -587,7 +606,7 @@ function populateClusterFromFilteredMines() {
     
     // Maybe change this with zoom level??
     
-    clusterMines.Cluster.Size = 4;
+    clusterMines.Cluster.Size = 6;
 
 
 
@@ -618,8 +637,8 @@ function populateClusterFromFilteredMines() {
     };
     map.addLayer(clusterMines);
 
-    
-    map.fitBounds(clusterBounds);
+    if(document.getElementById("chkAutofit").checked)
+        map.fitBounds(clusterBounds);
 
 }
 
@@ -741,7 +760,8 @@ function removeFilter() {
     // Need to rebind the cluster to the filtered mines ?
 
     populateClusterFromFilteredMines();
-    map.fitBounds(clusterBounds);
+    if(document.getElementById("chkAutofit").checked)
+        map.fitBounds(clusterBounds);
 }
 
 function validateFilters() {
