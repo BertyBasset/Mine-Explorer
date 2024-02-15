@@ -1,13 +1,11 @@
 MAP EXPLORER
 
-Add Autofit option for filters
-Make Map resp scale x2
-
-
+Colour pins
+Make Map resp scale controls x2
 get gridref on click  
 get geology on click
 Go to location
-Colour pins
+
 
 
 
@@ -21,7 +19,7 @@ Editor
 To Do
 Alderley Links
 SiteType
-separate close mines
+
 
 Compare Peak against Mineral Layer
 

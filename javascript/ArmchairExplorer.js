@@ -614,6 +614,7 @@ function populateClusterFromFilteredMines() {
     clusterBounds = L.latLngBounds();
     for(mine of filteredMines) {
         var marker = new PruneCluster.Marker(mine.Lat, mine.Long);
+        marker.color = 'red';
         marker.data.name = mine.Name;
         marker.data.products = mine.Products;
         marker.data.id = mine.ID;
