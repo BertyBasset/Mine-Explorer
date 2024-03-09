@@ -211,7 +211,7 @@ function showResults(data, searchType) {
             document.getElementById("divMap").style.display = "block";
 
         document.getElementById("search-summary").style.display = "block";
-        document.getElementById("search-summary").innerText = `Maximum of ${MAX_RESULTS} records returned in ${elapsed.toFixed(0)}mS. Please refine your search.`;
+        document.getElementById("search-summary").innerHTML = `<span style='background-color:yellow;color:red;font-weight:bold'> ** Maximum of ${MAX_RESULTS} records returned in ${elapsed.toFixed(0)}mS. Please refine your search. ** </span>`;
     } else {
         if(selectedIndex == 0)
             document.getElementById("data-table").style.display = "block";

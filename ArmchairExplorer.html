@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <script src="./javascript/leaflet-http-header.js"></script>
         <script src="./javascript/ArmchairExplorer.js"></script>   
+        <script src="./javascript/os.js"></script>   
 
         <style>
             body {
@@ -34,7 +35,7 @@
             }
             #divMines {
                 position: absolute;
-                top: 50px;
+                top: 90px;
                 left: 8px;
                 z-index: 1000;
                 background-color:rgb(255,255,255, .7);
@@ -44,26 +45,26 @@
 
             #divFilter {
                 position: absolute;
-                top: 90px;
+                top: 50px;
                 left: 8px;
                 z-index: 1000;
-                background-color: rgb(255,255,255, .7);
+                background-color: rgb(255,255,255, .75);
                 width: 500px;
-                height: 320px;
+     
                 border-radius: 4px;
-                border: solid 1px #000000;
+                border: solid 2px #000000;
                 visibility: hidden;
             }       
             #btnFilter {
                 position: absolute;
-                top: 90px;
+                top: 50px;
                 left: 8px;
                 z-index: 2000;
                 background-color: rgb(255,255,255, .7);
-                width: 30px;
-                height: 29px;
+                width: 28px;
+                height: 28px;
                 border-radius: 4px;
-                border: solid 1px #000000;
+                border: solid 2px #000000;
             }     
 
             
@@ -134,7 +135,8 @@
     <body>
         <div id="divMap">
             <select id="selMapLayer"></select>
-            <div id="divMines">                <input type="checkbox" onclick="chkMines_CheckedChange(this.checked);" id="chkShowMines" checked="true">
+            <div id="divMines">                
+                <input type="checkbox" onclick="chkMines_CheckedChange(this.checked);" id="chkShowMines" checked="true">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="spnShowMines">Show me the Mines!</span>
             </div>
             <!-- Kepp Zoom text box for debugging-->
@@ -172,15 +174,21 @@
                  <label for="chkHasReferences"                style="top: 165px; right: 45px; " title="Has one or more publication references">Has References:</label>
                  <input type="checkbox" id="chkHasReferences" style="top: 170px; right: 15px" title="Has one or more publication references"/>
 
-                 <label for="chkAutofit"                style="top: 275px; right: 45px; " title="Autofit map to displayed pins">Autofit Map:</label>
-                 <input type="checkbox" checked id="chkAutofit" style="top: 280px; right: 15px" title="Autofit map to displayed pins"/>
+                 <label for="chkHideCoalOnly"                style="top: 205px; right: 45px; " title="Hide sites where coal is only product (sites with secondary products are shown)">Hide 'coal only':</label>
+                 <input type="checkbox" id="chkHideCoalOnly" checked style="top: 210px; right: 15px" title="Hide sites where coal is only product (sites with secondary products are shown)"/>
+
+
+                 <label for="chkAutofit"                style="top: 255px; right: 45px; " title="Autofit map to displayed pins">Autofit Map:</label>
+                 <input type="checkbox" checked id="chkAutofit" style="top: 260px; right: 15px" title="Autofit map to displayed pins"/>
 
 
 
-                  <input type="button" id="btnRemoveFilter" disabled="disabled" value="Remove" onclick="removeFilter();" style="bottom: 15px; left: 190px;"/>
-                  <input type="button" id="btnApplyFilter" value="Apply" onclick="applyFilter();" style="bottom: 15px; right: 190px;"/>
+                  <input type="button" id="btnRemoveFilter" disabled="disabled" value="Remove" onclick="removeFilter();" style="top: 260px; left: 190px;"/>
+                  <input type="button" id="btnApplyFilter" value="Apply" onclick="applyFilter();" style="top: 260px; right: 190px;"/>
 
             </div>
+
+            
         </div>
     </body>
 </html>     

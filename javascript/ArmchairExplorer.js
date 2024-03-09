@@ -1,3 +1,5 @@
+var DEFAULT_CLUSTER_SIZE = 16;
+
 var mines;
 var filteredMines;
 var clusterMines;
@@ -24,14 +26,25 @@ var mapLayers
 document.addEventListener("DOMContentLoaded", async function() {
     await fetchToken();
 
+    
+    // If we select coal from dropdown, we need to uncheck the hide coal only checkbox
+    document.getElementById("selProduct").addEventListener("change", function() {
+        if(this.value == "29")
+            document.getElementById("chkHideCoalOnly").checked = false;
+
+    });
+
+    // Conversely if we check the hide coal only checkbox, we need to unselect coal from the dropdown
+    document.getElementById("chkHideCoalOnly").addEventListener("change", function() {
+        if(this.checked)
+            document.getElementById("selProduct").value = "";
+    });
+
 
     await fetch("https://www.buddlepit.co.uk/api/init.php?key=4f30f5b6-9c1e-4e29-a56a-0b4c5d841f3c")
     .then(response => response.json())
     .then(body => {
         keys = body;
-        
-
-
 
         // Data Objects - Map Options, Tile Servers, Map Layers
 
@@ -363,10 +376,6 @@ document.addEventListener("DOMContentLoaded", async function() {
             {id: "13", name: "England - Lidar", Layers: [14]},
         ];
 
-
-
-
-
         loadPage();
     })
     .catch(error => console.error('Error fetching data:', error));   
@@ -405,14 +414,12 @@ function loadPage() {
         if(currentZoom ==  maxZoom)
             clusterMines.Cluster.Size = .1;
         else
-            clusterMines.Cluster.Size = 6;
-        
-        
-
+            clusterMines.Cluster.Size = DEFAULT_CLUSTER_SIZE;
 
     });
 
-    
+    map.on('click', showpopup);
+
     tileServers.forEach(function(tileServer) {
        var layer;
        if(tileServer.isCrs) {
@@ -463,9 +470,11 @@ function showLayers(layerIndices) {
             if(currentZoom ==  maxZoom)
             clusterMines.Cluster.Size = .1;
         else
-            clusterMines.Cluster.Size = 6;            
+            clusterMines.Cluster.Size = DEFAULT_CLUSTER_SIZE;            
 
         });
+
+        map.on('click', showpopup);
 
         isCrs = tileServers[layerIndices[0]].isCrs;
 
@@ -536,7 +545,8 @@ function getAllMines() {
         .then(data => {
             mines = data;
             // Clone the array - later we will create it by filtering the original mines array
-            filteredMines  =  [...mines];
+            // By default filter out coal only - we can add it back in if the user selects it from the dropdown or unchecks the hide coal only checkbox
+            filteredMines  =  [...mines].filter(mine => !mine.IsCoalOnly);
             populateClusterFromFilteredMines();
          })
         .catch(error => {
@@ -606,7 +616,7 @@ function populateClusterFromFilteredMines() {
     
     // Maybe change this with zoom level??
     
-    clusterMines.Cluster.Size = 6;
+    clusterMines.Cluster.Size = DEFAULT_CLUSTER_SIZE;
 
 
 
@@ -698,6 +708,7 @@ function applyFilter() {
     var siteTypeId = document.getElementById("selSiteType").value;
     var productId = document.getElementById("selProduct").value;
 
+    // This is actual filter - we filter mines -> filtered mines
 
     filteredMines = mines.filter(function(item) {
         // Check if the item meets the criteria
@@ -719,26 +730,22 @@ function applyFilter() {
             (descSearch === '' || descSearch === 'desc' || item.Desc.toLowerCase().includes(descSearch.toLowerCase()))
         );
     });
+
+    // If coal only checkbox is checked, filter out all mines that are not coal only
+    if(document.getElementById("chkHideCoalOnly").checked)
+        filteredMines = filteredMines.filter(mine => !mine.IsCoalOnly);
+
+
     
     if(filteredMines.length == 0) { 
         alert("No mines found that match the criteria");
         return;
     }
 
-
-
- 
-
     // Need to rebind the cluster to the filtered mines ?
     populateClusterFromFilteredMines();
-
-
-
     document.getElementById("chkShowMines").checked = true;
-
 }
-
-
 
 
 function removeFilter() {
@@ -766,6 +773,7 @@ function removeFilter() {
 }
 
 function validateFilters() {
+ /*
     if(
            document.getElementById("txtName").value.trim() == ""
         && document.getElementById("txtFreeText").value.trim() == ""
@@ -775,13 +783,14 @@ function validateFilters() {
         && document.getElementById("chkIsCrow").checked == false
         && document.getElementById("chkHasTextFields").checked == false
         && document.getElementById("chkHasLinks").checked == false 
-        && document.getElementById("chkHasReferences").checked == false) {
+        && document.getElementById("chkHasReferences").checked == false
+        && document.getElementById("chkHideCoalOnly").checked == true) {
             alert("Please enter at least one filter");
             document.getElementById("txtName").focus();
             document.getElementById("txtName").select();
             return false;
         }
-
+*/
     return true;
 }
 
@@ -811,17 +820,7 @@ function stopMouseEventPropogationForId(id) {
     document.getElementById(id).addEventListener("wheel", function(e) {
         e.stopPropagation();
     }, { passive: true });
-
-
-    
 }
-
-
-
-
-
-
-
 
 
 
@@ -874,3 +873,156 @@ async function fetchToken() {
     setTimeout(fetchToken, t);
 }
 
+showpopup = function (e) {
+    wgs84 = new GT_WGS84();
+    wgs84.setDegrees(e.latlng.lat, e.latlng.lng);
+    osgb=wgs84.getOSGB();
+    var gridRef = osgb.getGridRef(4);
+    var latlon = `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)} `;
+
+    var table = `
+        <table style="width:460px">
+            <tr><td colspan="3"><b>Location</b></td></tr>
+            <tr>
+                <td style="width:100px">
+                    Lon Lat:
+                </td>
+                <td>
+                    ${latlon}    
+                </td>
+                <td>
+                    <img src="./images/clipboard.png" onclick="copyToClipboard('${latlon}')" style="width:20px;height:20px;cursor:pointer" title="Copy LatLon to clipboard" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Grid Ref:
+                </td>
+                <td>
+                    ${gridRef}
+                </td>
+                <td>
+                    <img src="./images/clipboard.png" onclick="copyToClipboard('${gridRef}')" style="width:20px;height:20px;cursor:pointer" title="Copy GridRef to clipboard" />
+                </td>
+            </tr>            
+            <tr>
+                <td>
+                    Altitude:
+                </td>
+                <td>
+                    <span class="spnElevation"> m     
+                </td>
+                <td>
+                
+                </td>
+            </tr>   
+            <tr><td colspan="3"><b>Geology</b></td></tr>
+            <tr><td style='vertical-align:top'>Name:</td><td colspan="2" class="tdGeologyName"></td></tr>    
+            <tr><td style='vertical-align:top'>Age:</td><td colspan="2" class="tdGeologyAge"></td></tr>    
+            <tr><td style='vertical-align:top'>Type:</td><td colspan="2" class="tdGeologyType"></td></tr>    
+            <tr><td style='vertical-align:top'>Setting:</td><td colspan="2" class="tdGeologySetting"></td></tr>    
+            <tr><td style='vertical-align:top'>Env:</td><td colspan="2" class="tdGeologyEnv"></td></tr>    
+    
+        
+        </table>
+        `;
+   
+
+
+    // Get Geology
+    getGeology(e.latlng.lat, e.latlng.lng);
+
+   
+    getAltitude(e.latlng.lat, e.latlng.lng)
+
+    var popup = L.popup({ autoclose: true})
+        .setLatLng(e.latlng)
+        .setContent(table)
+        .openOn(map);
+
+        popup._container.querySelector('.leaflet-popup-content-wrapper').style.width = '500px'; // Adjust the width as needed
+
+
+}
+
+function copyToClipboard(text) {
+    // Nifty new way of coping to clipboard without having to create temprary textarea
+    navigator.clipboard.writeText(text);
+}
+
+async function getAltitude(lat, lon) {
+    var ev;
+    try {
+        var url = `https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lon}`;
+        const response = await fetch(url);
+        const data = await response.json();
+         ev = data.results[0].elevation;
+
+    } catch (error) {
+        ev = "-";
+    }
+    
+    for(var i = 0; i < document.getElementsByClassName("spnElevation").length; i++)
+        document.getElementsByClassName("spnElevation")[i].innerText = `${ev} m`;   
+}
+
+async function getGeology(lat, long) {
+    var url = "https://www.buddlepit.co.uk/api/bgsFeatureRequestProxy.php?lat1=[LAT1]&lon1=[LON1]&lat2=[LAT2]&lon2=[LON2]"; 
+
+    url = url.replace("[LON1]", long);
+    url = url.replace("[LON2]", long + 0.001);
+    url = url.replace("[LAT1]", lat);
+    url = url.replace("[LAT2]", lat + 0.001);
+
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'text/html',
+            },
+        });
+        const data = await response.text();         // We should change api to return json rather than text when we get a chance
+        const geo = JSON.parse(data);
+
+        for(var i = 0; i < document.getElementsByClassName("tdGeologyName").length; i++)
+           document.getElementsByClassName("tdGeologyName")[i].innerText = toProperCase(geo.Name);
+          
+        var age =  `${toProperCase(geo.MinPeriod)} ${toProperCase(geo.MinTime) ? `(${toProperCase(geo.MinTime)})` : ''} to ${toProperCase(geo.MaxPeriod)} ${toProperCase(geo.MaxTime) ? `(${toProperCase(geo.MaxTime)})` : ''}`;
+        for(var i = 0; i < document.getElementsByClassName("tdGeologyAge").length; i++)
+           document.getElementsByClassName("tdGeologyAge")[i].innerText = age;
+
+        var type = geo.Type;
+        if(geo.Broad !== "")
+            type += `, ${geo.Broad}`;
+        for(var i = 0; i < document.getElementsByClassName("tdGeologyType").length; i++)
+            document.getElementsByClassName("tdGeologyType")[i].innerText = capitalizeFirstLetter(type);
+
+        var setting = geo.Setting;
+        if(geo.SettingPlus !== null && geo.SettingPlus !== undefined && geo.SettingPlus !== "undefined" && geo.SettingPlus !== "Null")
+            setting += `, ${geo.SettingPlus}`;
+        for(var i = 0; i < document.getElementsByClassName("tdGeologySetting").length; i++)
+            document.getElementsByClassName("tdGeologySetting")[i].innerText = capitalizeFirstLetter(setting);
+
+        for(var i = 0; i < document.getElementsByClassName("tdGeologyEnv").length; i++)
+            document.getElementsByClassName("tdGeologyEnv")[i].innerText = geo.Environment;
+
+
+
+    } catch (error) {
+        console.log(error);
+    }
+
+
+
+}
+
+function toProperCase(str) {
+    return str.toLowerCase().replace(/\b\w/g, function(char) {
+      return char.toUpperCase();
+    });
+ }
+
+ function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+ }

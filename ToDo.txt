@@ -1,12 +1,16 @@
 MAP EXPLORER
 
+
+Geology popup marker position
+Go to location/
+
+
+
+
+
 Colour pins
 Make Map resp scale controls x2
-get gridref on click  
-get geology on click
-Go to location
-
-
+Login Cookie
 
 
 MINE SEARCH
@@ -16,15 +20,6 @@ Change Request
 Editor
 
 
-To Do
-Alderley Links
-SiteType
 
-
-Compare Peak against Mineral Layer
-
-
-
-Login Cookie
 
 
