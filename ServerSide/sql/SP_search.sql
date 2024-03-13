@@ -68,7 +68,10 @@ BEGIN
                     COS(RADIANS(M.Long) - RADIANS(lon)) +
                     SIN(RADIANS(lat)) * SIN(RADIANS(M.Lat))
                 )
-            ) END `Distance`    	FROM 
+            ) END `Distance`,
+		M.HexColor
+
+		FROM 
         MineSummary M 
     	WHERE 
 		  (id IS NULL OR M.ID = id)

@@ -22,8 +22,14 @@ BEGIN
 							  'HasLinks', CASE WHEN EXISTS (SELECT 1 FROM Url WHERE MineID = M.ID) THEN TRUE ELSE FALSE END,
 							  'HasPub', CASE WHEN EXISTS (SELECT 1 FROM Publication WHERE MineID = M.ID) THEN TRUE ELSE FALSE END,							  
                        'AreaID', M.AreaID,
-                      
                        'SiteTypeID', M.SiteTypeID,
+							  'IsCoalOnly', 
+							    CASE 
+							        WHEN (SELECT COUNT(1) FROM MineProduct WHERE MineID = M.ID) = 1 AND EXISTS (SELECT 1 FROM MineProduct WHERE MineID = M.ID AND ProductID =29)
+									  THEN TRUE 
+							        ELSE FALSE 
+							    END,
+                      
                        'Names', (
                            SELECT JSON_ARRAYAGG(
                                       JSON_OBJECT(
@@ -43,10 +49,12 @@ BEGIN
                            FROM MineProduct MP
                            JOIN Product P ON MP.ProductID = P.ID
                            WHERE MP.MineID = M.ID
-                       )
+                       ),
+                       'IconFileName', (SELECT IconFilename FROM Product P JOIN MineProduct MP ON MP.ProductID = P.ID WHERE MineID = M.ID ORDER BY IsPrimary DESC LIMIT 1) 
                    )
                )
         FROM Mine M
+        WHERE ID BETWEEN fromid AND toid
         ORDER BY M.ID
     );
 

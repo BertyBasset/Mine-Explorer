@@ -20,7 +20,8 @@ BEGIN
         `Names`, 
         Products, 
         SiteType,
-        NULL Distance
+        NULL Distance,
+        HexColor
     FROM 
         MineSummary S
     WHERE 

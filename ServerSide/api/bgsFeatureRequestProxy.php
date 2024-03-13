@@ -1,5 +1,11 @@
 
 <?php
+
+// Proxy returning Geological Feature Json object from BGS WMS service
+// This overcomes the CORS issue when trying to access the BGS WMS service directly from the client
+// and also allows mapping of the returned XML to a JSON object
+
+
 // Get the query parameters
 $lon1 = $_GET['lon1'];
 $lon2 = $_GET['lon2'];

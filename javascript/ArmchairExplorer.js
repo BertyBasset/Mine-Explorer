@@ -420,6 +420,7 @@ function loadPage() {
 
     map.on('click', showpopup);
 
+    
     tileServers.forEach(function(tileServer) {
        var layer;
        if(tileServer.isCrs) {
@@ -624,9 +625,10 @@ function populateClusterFromFilteredMines() {
     clusterBounds = L.latLngBounds();
     for(mine of filteredMines) {
         var marker = new PruneCluster.Marker(mine.Lat, mine.Long);
-        marker.color = 'red';
+
         marker.data.name = mine.Name;
         marker.data.products = mine.Products;
+        marker.data.iconFileName = mine.IconFileName;
         marker.data.id = mine.ID;
 
         clusterMines.RegisterMarker(marker);
@@ -637,6 +639,7 @@ function populateClusterFromFilteredMines() {
     // It appears that the pruncluster marker has become a leaflet marker by the time it gets in here, so we can use leaflet methods on it
     clusterMines.PrepareLeafletMarker = function (marker, data) {
         if(data.products == null)
+        
             marker.bindTooltip(`<b>${data.name}</b>`);
         else
             marker.bindTooltip(`<b>${data.name}</b><br />${data.products.map(product => product.Product).join(', ')}`);
@@ -644,7 +647,21 @@ function populateClusterFromFilteredMines() {
         marker.on('click', function() {
             window.open(`./MineDetails.html?id=${btoa(data.id)}`, "_blank");
         });
+
         
+        // Some places don't have products so use default icon
+        if(data.iconFileName != null) {
+            var markerIcon = L.icon({
+                iconUrl: './markers/' + data.iconFileName,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+
+            });
+            marker.setIcon(markerIcon);
+        }
+
+
+      
     };
     map.addLayer(clusterMines);
 
@@ -744,7 +761,6 @@ function applyFilter() {
 
     // Need to rebind the cluster to the filtered mines ?
     populateClusterFromFilteredMines();
-    document.getElementById("chkShowMines").checked = true;
 }
 
 
@@ -797,8 +813,9 @@ function validateFilters() {
 function stopMouseEventPropogation() {
     stopMouseEventPropogationForId("divFilter");
     stopMouseEventPropogationForId("selMapLayer");
-    stopMouseEventPropogationForId("chkShowMines");
     stopMouseEventPropogationForId("btnFilter");
+    stopMouseEventPropogationForId("txtGoto");
+    stopMouseEventPropogationForId("btnGoto");
 }
 
 function stopMouseEventPropogationForId(id) {
@@ -873,7 +890,10 @@ async function fetchToken() {
     setTimeout(fetchToken, t);
 }
 
+var currentPopup= null;
+
 showpopup = function (e) {
+
     wgs84 = new GT_WGS84();
     wgs84.setDegrees(e.latlng.lat, e.latlng.lng);
     osgb=wgs84.getOSGB();
@@ -915,7 +935,9 @@ showpopup = function (e) {
                 <td>
                 
                 </td>
-            </tr>   
+            </tr>
+
+            <tr><td style="height:10px"></td></tr>
             <tr><td colspan="3"><b>Geology</b></td></tr>
             <tr><td style='vertical-align:top'>Name:</td><td colspan="2" class="tdGeologyName"></td></tr>    
             <tr><td style='vertical-align:top'>Age:</td><td colspan="2" class="tdGeologyAge"></td></tr>    
@@ -940,7 +962,12 @@ showpopup = function (e) {
         .setContent(table)
         .openOn(map);
 
-        popup._container.querySelector('.leaflet-popup-content-wrapper').style.width = '500px'; // Adjust the width as needed
+    popup._container.querySelector('.leaflet-popup-content-wrapper').style.width = '500px'; // Adjust the width as needed
+    popup._container.querySelector('.leaflet-popup-content-wrapper').style.backgroundColor = '#E6F5B0'; 
+    popup._container.querySelector('.leaflet-popup-tip').style.backgroundColor = '#E6F5B0';
+    popup.update();
+
+
 
 
 }
@@ -1025,4 +1052,60 @@ function toProperCase(str) {
 
  function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
+ }
+
+
+
+ function gotoLocation() {
+    let gotoLocationMarker = null;
+    if(document.getElementById("txtGoto").value.trim() == "") {
+        alert("Please enter a location to go to");
+        document.getElementById("txtGoto").focus();
+        return;
+    }
+
+    // Assume if there's a comma, it's a lat lon, otherwise it's a grid ref
+    var location = document.getElementById("txtGoto").value.trim().toUpperCase().replace(/\s/g, '');
+    try {
+        if(location.includes(",")) {
+            var latlon = location.split(",");
+            map.setView([latlon[0], latlon[1]], 16);
+            gotoLocationMarker = L.marker([latlon[0], latlon[1]]).addTo(map);
+            gotoLocationMarker.bindTooltip(`Go to location: ${latlon[0]}, ${latlon[1]} - click to remove`);
+        } else {
+            var osgb = new GT_OSGB();   
+            if(osgb.parseGridRef(location)) {
+                var wgs84 = osgb.getWGS84();
+                map.setView([wgs84.latitude, wgs84.longitude], 16);
+                gotoLocationMarker = L.marker([wgs84.latitude, wgs84.longitude]).addTo(map);
+                gotoLocationMarker.bindTooltip(`Go to Grid Ref: ${osgb.getGridRef(4)} - click to remove`);
+                document.getElementById("txtGoto").value = osgb.getGridRef(4);
+            } else {
+                alert("Invalid Grid Reference");
+                document.getElementById("txtGoto").focus();
+                document.getElementById("txtGoto").select();                
+            }
+        }
+
+        if(gotoLocationMarker != null) {
+            var markerIcon = L.icon({
+                iconUrl: './markers/marker-icon-red.png',
+    
+            });
+            gotoLocationMarker.setIcon(markerIcon);
+
+            gotoLocationMarker.addEventListener("click", function(e) {
+                map.removeLayer(gotoLocationMarker);
+            });
+        }
+       
+
+    } catch (error) {
+        alert(error.message);
+        alert("Invalid location");
+    }
+    document.getElementById("txtGoto").focus();
+    document.getElementById("txtGoto").select();
+
+
  }

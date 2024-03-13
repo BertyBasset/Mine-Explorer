@@ -1,14 +1,20 @@
 MAP EXPLORER
 
-
-Geology popup marker position
-Go to location/
-
-
+X Add different marker for Goto
+Sometimes can't selecy Goto text box
+Sometimes clicking goto text box pops up
 
 
+Write svg 25x41 generator with png export. Select colour. Select outline darkness. Select centre colour.
 
-Colour pins
+
+
+
+
+
+
+
+
 Make Map resp scale controls x2
 Login Cookie
 

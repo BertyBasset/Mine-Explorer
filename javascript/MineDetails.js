@@ -179,7 +179,8 @@ function addNearestSites(nearestMines) {
             let marker = L.circleMarker([parseFloat(m.Lat), parseFloat(m.Long)], {
                 radius: 7,
                 color: 'blue',
-                fillOpacity: 0
+                fillColor: 'white',
+                fillOpacity: 1
             }).addTo(map);
             marker.bindTooltip(m.Name);
             marker.on('click', function(e) {

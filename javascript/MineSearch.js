@@ -592,13 +592,15 @@ function showMapResults(mines) {
     mines.forEach(mine => {
         if(mine.Lat != null && mine.Long != null) {
             var marker = L.circleMarker([mine.Lat, mine.Long], {
+                weight: 2,
                 radius: 7,
-                color: 'blue',
-                fillOpacity: 0
+                color: 'black',
+                fillColor: mine.HexColor,
+                fillOpacity: 1
             }
                 
             ).addTo(markerGroup);
-            marker.bindTooltip(mine.Name);
+            marker.bindTooltip(`${mine.Name} (${mine.Products})`);
             marker.on('click', function(e) {
                 window.open(`./MineDetails.html?id=${btoa(mine.ID)}`, "_blank");
             });

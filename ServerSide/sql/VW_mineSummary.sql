@@ -1,6 +1,6 @@
 ALTER ALGORITHM = UNDEFINED DEFINER=`{UserName}`@`%` SQL SECURITY DEFINER 
 VIEW `MineSummary` AS 
-SELECT 
+SELECT
     `m`.`ID` AS `ID`,
     `m`.`Name` AS `Name`,
     `m`.`Location` AS `Location`,
@@ -28,8 +28,7 @@ SELECT
     `m`.`SiteTypeID` AS `SiteTypeID`,
     `m`.`ParentMineID` AS `ParentMineID`,
     `m`.`RecordIsLocked` AS `RecordIsLocked`,
-    CONCAT_WS(
-        ', ',
+    CONCAT_WS(', ',
         IF(`m`.`History` <> '', CONCAT('<u>History:</u> ', `m`.`History`), NULL),
         IF(`m`.`WorkedStart` <> '', CONCAT('<u>Start:</u> ', `m`.`WorkedStart`), NULL),
         IF(`m`.`WorkedEnd` <> '', CONCAT('<u>End:</u> ', `m`.`WorkedEnd`), NULL),
@@ -38,21 +37,29 @@ SELECT
         IF(`m`.`ConservationNotes` <> '', CONCAT('<u>Conservation Notes:</u> ', `m`.`ConservationNotes`), NULL)
     ) AS `Summary`,
     (
-        SELECT GROUP_CONCAT(`MineName`.`Name` SEPARATOR ', ') 
-        FROM `MineName` 
+        SELECT GROUP_CONCAT(`MineName`.`Name` SEPARATOR ', ')
+        FROM `MineName`
         WHERE `MineName`.`MineID` = `m`.`ID`
     ) AS `Names`,
     (
-        SELECT GROUP_CONCAT(`P`.`Name` SEPARATOR ', ') 
-        FROM (`Product` `P` 
-        JOIN `MineProduct` `MP` ON `MP`.`ProductID` = `P`.`ID`) 
+        SELECT GROUP_CONCAT(`P`.`Name` SEPARATOR ', ')
+        FROM (`Product` `P`
+        JOIN `MineProduct` `MP` ON (`MP`.`ProductID` = `P`.`ID`))
         WHERE `MP`.`MineID` = `m`.`ID`
     ) AS `Products`,
     `a`.`Name` AS `AreaName`,
-    `st`.`Description` AS `SiteType`
-FROM 
+    `st`.`Description` AS `SiteType`,
     (
-        (`Mine` `m` 
-        JOIN `Area` `a` ON `m`.`AreaID` = `a`.`ID`)
-        LEFT JOIN `SiteType` `st` ON `m`.`SiteTypeID` = `st`.`ID`
+        SELECT `P`.`HexColor`
+        FROM (`Product` `P`
+        JOIN `MineProduct` `MP` ON (`MP`.`ProductID` = `P`.`ID`))
+        WHERE `MP`.`MineID` = `m`.`ID`
+        ORDER BY MP.IsPrimary DESC
+        LIMIT 1
+    ) AS `HexColor`
+FROM
+    (
+        (`Mine` `m`
+        JOIN `Area` `a` ON (`m`.`AreaID` = `a`.`ID`))
+        LEFT JOIN `SiteType` `st` ON (`m`.`SiteTypeID` = `st`.`ID`)
     );

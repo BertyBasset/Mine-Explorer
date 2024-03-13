@@ -25,30 +25,32 @@
             }
             #selMapLayer {
                 position: absolute;
-                top: 10px;
+                top: 5px;
                 left: 10px;
                 z-index: 1000;
                 font-size: 18px;
                 height: 30px;
                 border-width: 2px;
-                background-color: rgb(255,255,255, .7);
+                background-color: rgb(255,255,255, .8);
             }
-            #divMines {
+
+            #divGoto {
                 position: absolute;
-                top: 90px;
-                left: 8px;
+                top: 40px;
+                left: 10px;
                 z-index: 1000;
-                background-color:rgb(255,255,255, .7);
-                width: 220px;
+                font-size: 18px;
                 height: 30px;
-            }   
+                border-width: 2px;
+                background-color: rgb(255,255,255, .8);
+            }            
 
             #divFilter {
                 position: absolute;
-                top: 50px;
+                top: 75px;
                 left: 8px;
                 z-index: 1000;
-                background-color: rgb(255,255,255, .75);
+                background-color: rgb(255,255,255, .8);
                 width: 500px;
      
                 border-radius: 4px;
@@ -57,7 +59,7 @@
             }       
             #btnFilter {
                 position: absolute;
-                top: 50px;
+                top: 75px;
                 left: 8px;
                 z-index: 2000;
                 background-color: rgb(255,255,255, .7);
@@ -107,7 +109,7 @@
 
             select,
             input[type=text] {
-                width:250px; 
+                width:230px; 
                 height: 30px; border-width: 2px; 
                 background-color: rgb(255,255,255, .7);
             }
@@ -134,13 +136,15 @@
     </head>
     <body>
         <div id="divMap">
-            <select id="selMapLayer"></select>
-            <div id="divMines">                
-                <input type="checkbox" onclick="chkMines_CheckedChange(this.checked);" id="chkShowMines" checked="true">
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="spnShowMines">Show me the Mines!</span>
-            </div>
+            <select id="selMapLayer" title="Select mapping source" style="width:310px"></select>
             <!-- Kepp Zoom text box for debugging-->
             <input id="txtZoom" style="visibility:hidden; position: absolute; width:250px;top: 10px; left: 400px; z-index: 1000; font-size: 20px;"></text>
+            <div id="divGoto">
+                <input type="text" style="width:252px; display: inline-block;" id="txtGoto" placeholder="[ss eeee nnnn] or [Lat, Lon]" title="Enter either a Grid Reference or Lat, Lon" onkeydown="if(event.keyCode==13) gotoLocation();" onfocus="this.select()" />
+                <input type="button" value="Goto" id="btnGoto" onclick="gotoLocation();" style="display: inline-block; left:255px; width: 55px" title="Go to specified Grid Reference or Lat, Lon"/>
+            </div>
+            
+            
             <div id="btnFilter"><img id="imgIcon" onclick="toggleFilterDisplay();" src="./open-iconic/svg/chevron-right.svg" alt="Toggle Filter" title="Toggle Filter Selector"></div>
             <div id="divFilter"">
                 <div id="divFilterBanner">Mine Filters</div>
@@ -155,10 +159,10 @@
                 <select id="selArea"      style="top: 130px; left: 130px;"><option value="">[select area]</option></select>
 
                 <label for="txtName" title="Mine or Feature Name"   style="top: 170px; left: 10px; ">Name:</label>
-                <input type="text" id="txtName" title="Mine or Feature Name" style="top: 170px; left: 130px;"/>
+                <input type="text" id="txtName" placeholder="[mine name]" title="Mine or Feature Name" style="top: 170px; left: 130px;"/>
 
                 <label for="txtFreeText" title="Any text that appears in History, Access Details, Description or Conservation Notes fields"  style="top: 210px; left: 10px; ">Free Text:</label>
-                <input type="text" id="txtFreeText" title="Any text that appears in History, Access Details, Description or Conservation Notes fields" style="top: 210px; left: 130px;"/>
+                <input type="text" id="txtFreeText" placeholder="[search text]" title="Any text that appears in History, Access Details, Description or Conservation Notes fields" style="top: 210px; left: 130px;"/>
                 
 
 
