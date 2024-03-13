@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 [61.2, 5]
             ],
             attributionControl: true,
-            zoomControl: false
+            zoomControl: false,
         };
         mapOptionsNonCrs = {
             minZoom: 6,
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 [49.5,-11],
                 [61.2, 5]
             ],
-            attributionControl: true
+            attributionControl: true,
         };
 
 

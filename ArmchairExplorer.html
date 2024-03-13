@@ -128,7 +128,16 @@
             #selMapLayer {
                 width: 360px;
             }
+            #divMap {
+                cursor: crosshair; /* Standard cursor for dragging */
 
+            }
+
+            #divMap:active {
+                cursor: grabbing; /* Change cursor when actively dragging */
+                cursor: -moz-grabbing; /* Firefox */
+                cursor: -webkit-grabbing; /* Chrome, Safari, Opera */
+            } 
 
         </style>
 
