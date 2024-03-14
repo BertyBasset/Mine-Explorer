@@ -83,8 +83,22 @@ function addMap(mine) {
     map.setView(centreLatLong, 9); // Set the initial view and zoom level
 
     var marker = L.marker(centreLatLong).addTo(map); // [latitude, longitude]
-    marker.bindTooltip(mine.Name);
+    marker.bindTooltip(`<b>${mine.Name}</b><br />${mine.Products == null ? 'products unknown': mine.Products}`);
+
+
+    var customIcon = L.icon({
+        iconUrl: `./markers/${mine.IconFilename}`,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+
+    });    
+
+    if(mine.IconFilename != null)
+        marker.setIcon(customIcon);
+
 }
+
+
 
 function centreMap() {
     map.setView(centreLatLong, 9);
@@ -144,7 +158,8 @@ function populateMineDetails(data) {
     if(conservation != '')
         addRow('Conservation',conservation, 2);
  
-    addMap(mine);;
+
+    addMap(mine);
 
     // Map must be added before nearest sites as it uses the map to add markers
     addNearestSites(data.NearestMines);
@@ -176,13 +191,20 @@ function addNearestSites(nearestMines) {
     
         // Create a closure to capture the value of 'm' for each iteration
         (function(m) {
-            let marker = L.circleMarker([parseFloat(m.Lat), parseFloat(m.Long)], {
-                radius: 7,
-                color: 'blue',
-                fillColor: 'white',
-                fillOpacity: 1
-            }).addTo(map);
-            marker.bindTooltip(m.Name);
+            
+            var marker = L.marker([m.Lat, m.Long]).addTo(map);
+
+            var customIcon = L.icon({
+                iconUrl: `./markers/${m.IconFilename}`,
+                iconSize: [19, 31],
+                iconAnchor: [9, 31],
+    
+            });            
+            if(m.IconFilename != null)
+                marker.setIcon(customIcon);
+
+
+            marker.bindTooltip(`<b>${m.Name}</b><br />${m.Products == null ? 'products unknown': m.Products}`);
             marker.on('click', function(e) {
                 window.location.href = `./MineDetails.html?id=${btoa(m.ID)}`;
             });

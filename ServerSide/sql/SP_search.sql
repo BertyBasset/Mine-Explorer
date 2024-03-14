@@ -69,7 +69,8 @@ BEGIN
                     SIN(RADIANS(lat)) * SIN(RADIANS(M.Lat))
                 )
             ) END `Distance`,
-		M.HexColor
+		M.HexColor,
+		M.IconFilename
 
 		FROM 
         MineSummary M 

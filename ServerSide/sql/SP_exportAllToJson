@@ -1,0 +1,12 @@
+CREATE DEFINER=`robremote2`@`%` PROCEDURE `ExportAllToJson`()
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT ''
+BEGIN
+CALL ExportToJson('/var/www/html/api/export1.json', 1, 1900);
+CALL ExportToJson('/var/www/html/api/export2.json', 1901, 3800);
+CALL ExportToJson('/var/www/html/api/export3.json', 3801, 5700);
+CALL ExportToJson('/var/www/html/api/export4.json', 5701, 10000);
+END

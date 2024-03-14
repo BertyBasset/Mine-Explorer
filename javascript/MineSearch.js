@@ -591,20 +591,26 @@ function showMapResults(mines) {
 
     mines.forEach(mine => {
         if(mine.Lat != null && mine.Long != null) {
-            var marker = L.circleMarker([mine.Lat, mine.Long], {
-                weight: 2,
-                radius: 7,
-                color: 'black',
-                fillColor: mine.HexColor,
-                fillOpacity: 1
-            }
-                
-            ).addTo(markerGroup);
-            marker.bindTooltip(`${mine.Name} (${mine.Products})`);
+            // Define custom icon
+            var customIcon = L.icon({
+                iconUrl: `./markers/${mine.IconFilename}`,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+    
+            });
+    
+            // Create marker with custom icon
+            var marker = L.marker([mine.Lat, mine.Long]).addTo(markerGroup);
+
+
+            
+            if(mine.IconFilename != null)
+                marker.setIcon(customIcon);
+
+            marker.bindTooltip(`<div style="text-align: left;"><b>${mine.Name}</b><br />${mine.Products == null? "product unknown" : mine.Products}</div>`);
             marker.on('click', function(e) {
                 window.open(`./MineDetails.html?id=${btoa(mine.ID)}`, "_blank");
             });
-            
         }
     });
 

@@ -640,7 +640,7 @@ function populateClusterFromFilteredMines() {
     clusterMines.PrepareLeafletMarker = function (marker, data) {
         if(data.products == null)
         
-            marker.bindTooltip(`<b>${data.name}</b>`);
+            marker.bindTooltip(`<b>${data.name}</b><br />product unknown`);
         else
             marker.bindTooltip(`<b>${data.name}</b><br />${data.products.map(product => product.Product).join(', ')}`);
 

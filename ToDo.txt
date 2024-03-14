@@ -1,27 +1,23 @@
-MAP EXPLORER
+MINE DEETAILS
+Make Detail non bold
 
-X Add different marker for Goto
-Sometimes can't selecy Goto text box
+
+
+
+ARMCHAIR EXPLORER ISSUES
+Sometimes can't select Goto text box
 Sometimes clicking goto text box pops up
 
 
-Write svg 25x41 generator with png export. Select colour. Select outline darkness. Select centre colour.
+SECURITY
+Loggin Cookie?
 
 
-
-
-
-
-
-
-
-Make Map resp scale controls x2
-Login Cookie
-
-
-MINE SEARCH
+REPSONSIVE CHANGES
 Responsive Detail Page
 Responsive Search Page
+
+LONGER SCALE CHANGES
 Change Request
 Editor
 

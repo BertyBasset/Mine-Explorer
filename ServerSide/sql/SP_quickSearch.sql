@@ -26,7 +26,8 @@ BEGIN
         Products, 
         SiteType,
         NULL Distance,
-        HexColor
+        HexColor,
+        IconFilename
     FROM 
         MineSummary  
     WHERE 

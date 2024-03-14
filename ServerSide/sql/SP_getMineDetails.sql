@@ -1,4 +1,5 @@
 BEGIN
+BEGIN
     -- Query 1: Get Mine details
     SELECT M.*, A.`Name` AreaName, A.ForumID `ForumID`, ST.Description SiteTypeDescription, M2.Name ParentMineName,
      (
@@ -11,7 +12,17 @@ BEGIN
         SELECT GROUP_CONCAT(`MN`.`Name` SEPARATOR ', ')
         FROM `MineName` `MN`
         WHERE `MN`.`MineID` = `M`.`ID`
-    ) AS `MineNames`
+    ) AS `MineNames`,
+    (
+        SELECT `P`.`IconFileName` 
+        FROM (`Product` `P` 
+        JOIN `MineProduct` `MP` ON (`MP`.`ProductID` = `P`.`ID`)) 
+        WHERE `MP`.`MineID` = `M`.`ID` 
+        ORDER BY `MP`.`IsPrimary` DESC 
+        LIMIT 1
+    ) AS `IconFilename`
+    
+    
 	 
 	   FROM Mine M
 	 JOIN Area A ON M.AreaID = A.ID
@@ -35,7 +46,7 @@ BEGIN
     
     -- Query 6: Get sites within 1km of site
 	SET @earth_radius_km := 6371; -- Earth's radius in kilometers
-	SET @within_distance := 1;
+	SET @within_distance := 2;
 	
 	SELECT `Long`, Lat INTO @Longitude, @Latitude
 	FROM Mine
@@ -47,8 +58,22 @@ BEGIN
 	            COS(RADIANS(@Longitude) - RADIANS(`Long`)) +
 	            SIN(RADIANS(Lat)) * SIN(RADIANS(@Latitude))
 	        ) * 1000)
-	    ) Distance
-	FROM Mine
+	    ) Distance,
+    (
+        SELECT GROUP_CONCAT(`P`.`Name` SEPARATOR ', ')
+        FROM (`Product` `P`
+        JOIN `MineProduct` `MP` ON (`MP`.`ProductID` = `P`.`ID`))
+        WHERE `MP`.`MineID` = `M`.`ID`
+     ) AS `Products`,
+    (
+        SELECT `P`.`IconFileName` 
+        FROM (`Product` `P` 
+        JOIN `MineProduct` `MP` ON (`MP`.`ProductID` = `P`.`ID`)) 
+        WHERE `MP`.`MineID` = `M`.`ID` 
+        ORDER BY `MP`.`IsPrimary` DESC 
+        LIMIT 1
+    ) AS `IconFilename`	  		    
+	FROM Mine M
 	WHERE (
 	        @earth_radius_km * ACOS(
 	            COS(RADIANS(Lat)) * COS(RADIANS(@Latitude)) *
@@ -62,5 +87,14 @@ BEGIN
 	            SIN(RADIANS(Lat)) * SIN(RADIANS(@Latitude))
 	        )
 	    );
+	    
+	    
+	    
+	-- QUERY 7 Child mines
+	SELECT ID, `Name`
+	
+	 FROM Mine M WHERE ParentMineId = mineID;
+    
+END
     
 END
